@@ -1,0 +1,360 @@
+{
+  "manifest": "composition-input-manifest",
+  "exercise": "IETF-126 digest-binding: one protected action across permit -> mandate -> record -> attestation (deliverable B)",
+  "version": "v0.4",
+  "status": "ISSUED FOR OWNER REVIEW (Lee) - PRE-EXECUTION - NOT A RESULT - supersedes v0.3 (issued under a NEW filename and NEW SHA-256; v0.3 sha256 907100ae683c3951ed06f67a567feedf10399b8d9045ad8f4ebc065361bd9287 stays on file unchanged; v0.1 as circulated stays on file; internal v0.2 was superseded before circulation)",
+  "date": "2026-07-18",
+  "boundary": "Exploratory interoperability against public artifacts only. No endorsement, certification, conformance determination, production authorization, readiness claim, license, merged protocol, or implied rights. HOLD until frozen execution evidence is returned and reviewed.",
+  "blocker_status_at_issue": {
+    "blocker_1": "CLOSED FOR PRE-RUN INPUT (Lee record, 2026-07-18 13:00 UTC): separate-owner, byte-level verification of the frozen ORPRG tuple by Mih (2026-07-18 12:23 UTC); classification per Lee: separate-owner verification of a frozen pre-execution input; not third-party certification; not the Deliverable-A independent external replay; not a composition or interoperability result",
+    "blocker_2": "THIS MANIFEST - issued for Lee's byte-for-byte review; closes only on Lee's review and adoption record",
+    "blocker_3": "AAC v3 posted at full immutable commit 46bfb4a1257b21e12d34c84102fe4bf358f9ddd7 - recorded by Lee (2026-07-17 21:41 UTC), OWNER REVIEW PENDING; its status is not implied by the Blocker-1 closure",
+    "deliverable_A": "PROCEED UNCHANGED under the custody protocol in this manifest",
+    "deliverable_B": "PRE-EXECUTION HOLD pending closure of Blockers 2 and 3 against their immutable inputs",
+    "public_posture": "HOLD"
+  },
+  "frozen_owner_artifacts": {
+    "orprg_permit_deliverable_A_replay_target": {
+      "owner": "Lee / Meridian Verity",
+      "source": "github.com/meridianverity/permit-receipt",
+      "tag": "v2.2.6-public-eval",
+      "replay_tuple": [
+        "permit-receipt-ref-eval-v2_2_6-public-eval.zip",
+        "permit-receipt-ref-eval-v2_2_6-public-eval.zip.sha256",
+        "permit-receipt-ref-eval-v2_2_6-public-eval.zip.manifest.json",
+        "permit-receipt-ref-eval-v2_2_6-public-eval.zip.provenance.json"
+      ],
+      "zip_sha256": "e5c40eca74fe2f451a0723db915c64b201e1d52f382cee24062e4dfc61fc632f",
+      "reviewer_doc": "docs/REVIEWER_FAST_PATH_v2_2_6.md",
+      "row1_status": "OWNER-CONFIRMED (Lee, 2026-07-15)",
+      "note": "unchanged Deliverable-A replay target; NOT modified, replaced, or superseded by the payment composition tuple below"
+    },
+    "orprg_payment_composition_tuple": {
+      "owner": "Lee / Meridian Verity",
+      "role": "Blocker-1 tuple: composition-only ORPRG payment PermitReceipt vectors for the exact frozen payment action (deliverable B)",
+      "release_url": "https://github.com/meridianverity/permit-receipt/releases/tag/ietf126-payment-composition-v0.1",
+      "tag": "ietf126-payment-composition-v0.1",
+      "tag_target_commit": "5c2de6c3f98a9deb2055f0d72d4d6aeef17a7ec9",
+      "status": "FROZEN PRE-EXECUTION INPUT — NOT A RESULT (package status verbatim); not superseding v2.2.6-public-eval",
+      "explicit_release_assets": {
+        "rule": "only the four explicitly uploaded assets are composition inputs; GitHub auto-generated source archives are excluded",
+        "assets": [
+          {
+            "filename": "orprg-ietf126-payment-composition-v0.1.zip",
+            "sha256": "d13c740c47710e4b28a1d2d511aa63574200256ce310f0e03ec618b383583c2f"
+          },
+          {
+            "filename": "orprg-ietf126-payment-composition-v0.1.zip.sha256",
+            "sha256": "7208b9c199c8c78d760a01a7c11757ae72cd48502bce9df338bfba0429505913"
+          },
+          {
+            "filename": "orprg-ietf126-payment-composition-v0.1.zip.manifest.json",
+            "sha256": "d4794b024055da9570ed32e2b66c4c763c66e1c17ecd94428347d360c1bf5c00"
+          },
+          {
+            "filename": "orprg-ietf126-payment-composition-v0.1.zip.provenance.json",
+            "sha256": "a9137f8561302c2153fd2f9f5dc151bec7666b6a616cd7b6cc211d40a973c436"
+          }
+        ]
+      },
+      "fixed_verifier_time": "2026-07-18T09:00:00Z",
+      "expected_package_verifier_summaries": [
+        "PASS: 203/203 checks; positive=ORPRG ALLOW; mandate-over-limit=ORPRG ALLOW (spend DENY expected downstream)",
+        "PASS: 74/74 independent checks"
+      ],
+      "independent_verifications_of_record": [
+        "Mih, 2026-07-18 12:23 UTC: four explicit assets downloaded independently; ZIP sha256 and all three sidecar-file hashes matched; both verifier summaries reproduced verbatim; recorded by Lee 13:00 UTC as separate-owner byte-level verification (Blocker-1 closure basis)",
+        "Tyche, 2026-07-18 (pre-issue check for this manifest): four explicit assets downloaded independently from the release URL; all four sha256 values matched the published values; sha256sum -c against the sidecar: OK; in-zip SHA256SUMS: 74/74 OK; verify-tuple.py and independent-verify.py emitted the two expected summary lines verbatim; both case action_digests and the machine-mandate action_hash recomputed from the shipped canonical bytes. Classification: frozen pre-execution input check only - not a composition or interoperability result"
+      ],
+      "in_zip_pins": {
+        "root_directory": "orprg-ietf126-payment-composition-v0.1",
+        "mapping_profile": {
+          "path": "mapping-profile.json",
+          "sha256": "5c670d45314681115e75517640c0220a88d5815035df039b5605d335c1c4b9ba",
+          "profile_id": "orprg-machine-mandate.payment-mapping.v0.1"
+        },
+        "expected_gates": {
+          "path": "expected-gates.json",
+          "sha256": "143231ee55826b342fc3be95bb964fbf91e8f2490e807d3fd8313da35fab780d",
+          "profile_id": "orprg-ietf126-payment-composition.expected-gates.v0.1",
+          "status": "PRE-EXECUTION EXPECTATIONS — NOT OBSERVED RESULTS"
+        },
+        "shared_appraisal_inputs": {
+          "note": "frozen ORPRG owner-appraisal inputs: policy, revocation state, verifier context, trust inputs; all additionally covered by the in-zip SHA256SUMS and the ZIP sha256 above",
+          "files": [
+            { "path": "shared/policy.json", "sha256": "807cbb6cbf389da28bf8cb8268c3a09c08fffb192dcc3f80c283f8cd019fa0e4" },
+            { "path": "shared/policy-rules.json", "sha256": "37aa74aca14e670dee75aa73c660dbb725345b20c6b29a629e9fd6335c7018c1" },
+            { "path": "shared/revocation-state.json", "sha256": "936bf7e41c2013ffe72ebbeb8ce3622074223c5fdef85b79e7ceabeab81dfad9" },
+            { "path": "shared/trust-inputs.json", "sha256": "129219d735906b578fb18f4b526501088fa250213daa85a03b6f54bdfbccc584" },
+            { "path": "shared/verifier-context.json", "sha256": "372b98cfcff813df566f3b44f1396db57c220532c0a3b133a8e2e02dda18658f" }
+          ]
+        },
+        "shared_machine_mandate_action": {
+          "path": "shared/machine-mandate-action.json",
+          "sha256": "4c6799659777555bf8d9a91ead1b342f17d6d0edd430081317f9649d414c8615",
+          "canonical_bytes_path": "shared/machine-mandate-action.canonical.bin",
+          "canonical_length_bytes": 91,
+          "action_hash": "sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299"
+        },
+        "cases": {
+          "positive": {
+            "case_id": "positive",
+            "amount_minor": 25000,
+            "amount_display": "EUR 250.00",
+            "protected_request": { "path": "cases/positive/protected-request.json", "sha256": "233db2dfe85056af71c77fe4e22e19c13a4bdf14e72be21e31f610a66103be43" },
+            "canonical_request": { "path": "cases/positive/canonical-request.bin", "length_bytes": 421, "canonicalization_profile_ref": "CP-JSON-2" },
+            "action_digest_unprefixed": "8defa2c7653af14f5e9869ddc0c9ae9233331cabf3bf69b7bb88f24517020136",
+            "permit_receipt": { "path": "cases/positive/permit-receipt.json", "sha256": "39400b1796d45677a24a63e7dc7d242d94159a218c2a86129cc59ab1ce158f62" },
+            "permit_receipt_core": { "path": "cases/positive/permit-receipt-core.canonical.bin", "receipt_core_digest_unprefixed": "6776443c809778182dc613df98fe4003586b4cb7537c4bbb986702937d62e3c0" },
+            "authorization_ref": { "path": "cases/positive/authorization-ref.json", "sha256": "bd93ecd68d6d0481b6bc9c7d857c15539febf8d63859197a5ec9e97342a3fbb0", "ref_artifact_id": "orprg:permitreceipt:orprg-ietf126-payment-composition-v0.1:positive", "ref_profile": "orprg.authorization-ref.public-eval.v2", "action_commitment": "sha256:8defa2c7653af14f5e9869ddc0c9ae9233331cabf3bf69b7bb88f24517020136", "ref_artifact_digest": "sha256:6776443c809778182dc613df98fe4003586b4cb7537c4bbb986702937d62e3c0", "scope_max_effect_budget": 25000 },
+            "authorization_ref_carrier": { "path": "cases/positive/authorization-ref-carrier.json", "sha256": "77229024dbb7dd44dbb55fa3d367eab0feb57f83073de08f309db78fb47022bd", "signature_algorithm": "ed25519" },
+            "expected_orprg_decision": "ALLOW",
+            "expected_downstream": "MachineMandate PASS; one external-effect commit marker"
+          },
+          "mandate_over_limit": {
+            "case_id": "mandate-over-limit",
+            "amount_minor": 75000,
+            "amount_display": "EUR 750.00",
+            "protected_request": { "path": "cases/mandate-over-limit/protected-request.json", "sha256": "1c3c93143780a36779077dda422906e652589ffac0dd029f4f5b44a423635bd0" },
+            "canonical_request": { "path": "cases/mandate-over-limit/canonical-request.bin", "length_bytes": 421, "canonicalization_profile_ref": "CP-JSON-2" },
+            "action_digest_unprefixed": "bd52ed187483ee61b5b5ec28b14afaf900d5c109c6a3a9918f404a6a9d17d700",
+            "permit_receipt": { "path": "cases/mandate-over-limit/permit-receipt.json", "sha256": "97a6dda3afb6b50f8dbe46bae57ff7d4dcbd198b9ef6e0bd5aa787bccf9d92e2", "separately_issued": "cryptographically bound to the exact EUR 750.00 protected request; NOT a reuse of the EUR 250.00 PermitReceipt" },
+            "permit_receipt_core": { "path": "cases/mandate-over-limit/permit-receipt-core.canonical.bin", "receipt_core_digest_unprefixed": "08987d4a076aeeb014575e835b02aa43cf00a304dbcbc1473c39ffebe57d4c89" },
+            "authorization_ref": { "path": "cases/mandate-over-limit/authorization-ref.json", "sha256": "9339c3f2e57261fe6179e8238a26cc3dcd6e357b8b374b8380ba4126fe92e730", "ref_artifact_id": "orprg:permitreceipt:orprg-ietf126-payment-composition-v0.1:mandate-over-limit", "ref_profile": "orprg.authorization-ref.public-eval.v2", "action_commitment": "sha256:bd52ed187483ee61b5b5ec28b14afaf900d5c109c6a3a9918f404a6a9d17d700", "ref_artifact_digest": "sha256:08987d4a076aeeb014575e835b02aa43cf00a304dbcbc1473c39ffebe57d4c89", "scope_max_effect_budget": 75000 },
+            "authorization_ref_carrier": { "path": "cases/mandate-over-limit/authorization-ref-carrier.json", "sha256": "41e8c627cca26a145c6b9d577ef2d33708d992ff83eed5475a2a7819552d924d", "signature_algorithm": "ed25519" },
+            "expected_orprg_decision": "ALLOW",
+            "expected_downstream": "MachineMandate spend DENY at max_spend=50000; zero external-effect commits"
+          }
+        }
+      }
+    },
+    "machine_mandate": {
+      "owner": "Tyche / Sokolov",
+      "source": "github.com/tyche-institute/machine-mandate",
+      "commit": "e440286dec11c43ad39ebcc7d0001fa0987e7bd8",
+      "visibility": "public"
+    },
+    "aep_pcr16_vector": {
+      "owner": "Tyche / Sokolov",
+      "source": "github.com/tyche-institute/aep-pcr16-vector",
+      "commit": "9521185f77c3dce292d7b4bd8a8100ca11fb50be",
+      "release": "v1.0-prior-vector",
+      "release_asset": "aep-pcr16-vector-v1.0.tar.gz",
+      "asset_sha256": "ea350f67d589f44edefd15502f045bb8166a47787bb9218d7d38318e7c7593f8",
+      "binding_profile": "tyche-aep-qual-v1 (PROFILE.md in the artifact)",
+      "note": "prior first-party vector, published for pinning; the composition run mints a NEW vector under the same profile",
+      "status_label": "PUBLISHED - REVIEW FINDINGS OPEN (owner-review findings 2026-07-16 addressed after the hackathon under new versions/hashes; assets byte-frozen; prior bundle NOT to be relied on as proof of the new composition result)"
+    },
+    "aac_scitt": {
+      "owner": "Mih / Action State",
+      "version": "v3",
+      "commit_full_immutable": "46bfb4a1257b21e12d34c84102fe4bf358f9ddd7",
+      "branch_non_normative": "feat/aac-composition-profile-pin (the commit SHA is the pin; the mutable branch URL is not)",
+      "owner_stated_tests": "14/14 profile tests, 607 overall (Mih 2026-07-17 20:50 UTC; subject to Lee's review)",
+      "status": "RECORDED BY LEE (2026-07-17 21:41 UTC) - OWNER REVIEW PENDING - NOT AGREED UNTIL REVIEWED - not implied closed by the Blocker-1 closure",
+      "four_agreed_items": [
+        "verify_composition.py described as a binding-only verifier; result exposed as bindings_ok with separately named permit_receipt_appraised and machine_mandate_appraised gates whose inputs are the owner-appraisal results",
+        "MachineMandate preimage = the exact issuer-signed JWT component bytes, implementation aligned, known-answer test over real compact-JWS bytes; typed reference validates digest_alg == SHA-256, digest matching [0-9a-f]{64}, the pinned preimage identifier, and the expected artifact type",
+        "typed preservation of effect.authorization through the full chain with one known-answer test: JSON serialization -> capsule_id computation -> COSE_Sign1 signing -> payload recovery -> COSE verification -> capsule_id recomputation, recovered references and capsule_id matching the originally signed payload exactly; plus one confirmed-Capsule vector with actual unprefixed I/O digests, both authorization references present, and the same effect.response_digest supplied to the PCR16 profile",
+        "terminology: 'profile-defined payload extension' (not 'namespaced extension')"
+      ],
+      "superseded_history": "eb81533923cf98313dd6578d6435faf05d2d33b7 = OWNER-PROPOSED - REVIEW PENDING - NOT AGREED - NOT A RESULT (historical); e337331a4105dd618f3b91daeecdf0109786dacc = binding structure corrected, run-path integration pending (historical)",
+      "expected_refs": [
+        "github.com/action-state-group/agent-action-capsule (spec + ref impl + Class-1 vectors)",
+        "github.com/action-state-group/scitt-cose (open verifier)",
+        "anchor.agentactioncapsule.org (transparency service)"
+      ]
+    }
+  },
+  "shared_synthetic_action": {
+    "status": "FROZEN for the composition run: permit-side by the ORPRG payment composition tuple above; mandate-side by machine-mandate @ e440286d",
+    "composition_action_id": "vienna-interop-2026-001",
+    "semantic_action": "synthetic invoice payment to acme-corp, EUR (ISO-4217 exponent 2), sandbox-only; no live payment; no real payment data",
+    "permit_side": {
+      "source": "the frozen ORPRG payment composition tuple (consumed as-is; no re-canonicalization by other layers)",
+      "canonicalization_profile_ref": "CP-JSON-2",
+      "canonical_request_length_bytes": 421,
+      "positive_action_digest_unprefixed": "8defa2c7653af14f5e9869ddc0c9ae9233331cabf3bf69b7bb88f24517020136",
+      "over_limit_action_digest_unprefixed": "bd52ed187483ee61b5b5ec28b14afaf900d5c109c6a3a9918f404a6a9d17d700",
+      "preimage_reconstruction": "from cases/<case>/canonical-request.bin (byte-exact) or canonical-request.hex.txt"
+    },
+    "mandate_side": {
+      "field_set": ["action_id", "outcome"],
+      "action_object": {
+        "action_id": "pay-invoice/acme-corp",
+        "outcome": "eur:250:acme-corp:vienna-interop-2026-001"
+      },
+      "canonicalization": "json.dumps(obj, sort_keys=True, separators=(\",\",\":\"), ensure_ascii=False).encode(\"utf-8\") - deps/jcs.py at machine-mandate @ e440286d (documented RFC 8785 subset)",
+      "canonical_bytes_utf8": "{\"action_id\":\"pay-invoice/acme-corp\",\"outcome\":\"eur:250:acme-corp:vienna-interop-2026-001\"}",
+      "canonical_bytes_hex": "7b22616374696f6e5f6964223a227061792d696e766f6963652f61636d652d636f7270222c226f7574636f6d65223a226575723a3235303a61636d652d636f72703a7669656e6e612d696e7465726f702d323032362d303031227d",
+      "canonical_length_bytes": 91,
+      "action_hash_claim": "sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299",
+      "amount_handling": "amount is NOT part of the hash preimage; checked separately against scope.max_spend",
+      "scope": {
+        "allowed_actions": ["pay-invoice/acme-corp"],
+        "action_commitments": ["sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299"],
+        "max_spend": 50000,
+        "max_spend_units": "EUR minor units (cents)"
+      },
+      "comparison_rule": "L4 verifier re-derives H({action_id, outcome}) from the request itself and string-compares to the credential-bound action_hash claim after SD-JWT presentation + issuer-signature verification (src/scope_enforce.py)",
+      "amount_paths": {
+        "requested_amount_path": "requested.amount",
+        "scope_limit_path": "scope.max_spend",
+        "units": "EUR minor units (cents); the frozen comparison int(requested.amount) <= scope.max_spend is unit-agnostic integer comparison - units are fixed by this manifest and the mapping profile",
+        "positive_requested_amount": 25000,
+        "over_limit_requested_amount": 75000,
+        "scope_max_spend": 50000
+      },
+      "credential_preimage": {
+        "rule": "option (a) CONFIRMED by all three owners (Mih 2026-07-17 15:04 UTC; Lee alignment requirements 16:03 UTC; Tyche 19:02 UTC): the exact issuer-signed JWT component bytes of the SD-JWT (the first ~-separated component as transmitted), frozen by digest once the run credential is minted",
+        "validation": "digest_alg = SHA-256; digest matching exactly [0-9a-f]{64}; pinned preimage identifier; expected artifact type validated; profile, manifest, implementation, and tests all name this same preimage",
+        "frozen_digest": "TO BE FROZEN AT CREDENTIAL MINT - recorded on the review thread before execution; the run may not proceed to evidentiary classification with this slot empty"
+      }
+    },
+    "opaque_descriptor_rule": "the string 'eur:250:acme-corp:vienna-interop-2026-001' (41 UTF-8 bytes, sha256 c22d1a9b8b13394bea6016b1be196f2d04782814ecde7fc7f50836e31308c26c = ORPRG payload_digest) is an OPAQUE frozen action descriptor. No verifier may parse the 'eur:250' substring or derive amount or currency semantics from it. The normative amount and currency semantics reside ONLY in: MachineMandate requested.amount; ORPRG max_effect_budget; ORPRG currency; MachineMandate scope.max_spend; and the frozen EUR-minor-unit mapping profile (mapping-profile.json, pinned above)."
+  },
+  "orprg_machine_mandate_mapping": {
+    "profile": "orprg-machine-mandate.payment-mapping.v0.1 (mapping-profile.json in the frozen tuple, sha256 5c670d45314681115e75517640c0220a88d5815035df039b5605d335c1c4b9ba)",
+    "rows": [
+      "MachineMandate action_id = pay-invoice/acme-corp -> ORPRG effect_type = PAYMENT_ATTEMPT, action_type = AUTHORIZE_SANDBOX, target_id = acme-corp, merchant_id = acme-corp",
+      "MachineMandate outcome -> ORPRG payload_digest = SHA-256 of the exact UTF-8 outcome bytes",
+      "MachineMandate requested.amount -> ORPRG max_effect_budget, EUR minor units (positive 25000; over-limit 75000)",
+      "currency context -> ORPRG currency = EUR, exponent 2"
+    ],
+    "same_action_rule": "cross-reference, not digest equality; all required equalities in mapping-profile.json must pass before the layer objects are treated as encodings of the same protected action; no amount inference from the outcome descriptor"
+  },
+  "aac_typed_permit_receipt_reference": {
+    "per": "Lee 2026-07-18 13:00 UTC owner-appraisal binding requirement; Mih acceptance 2026-07-18 12:23 UTC; final wiring OWNER-CONFIRM: MIH with the v3 review",
+    "pin": {
+      "artifact_type": "PermitReceipt",
+      "ref_profile": "orprg.authorization-ref.public-eval.v2",
+      "digest_algorithm": "SHA-256",
+      "byte_preimage": "the case-specific ORPRG receipt-core canonical bytes (cases/<case>/permit-receipt-core.canonical.bin, CP-JSON-2), digest = that case's receipt_core_digest (positive 6776443c...e3c0; over-limit 08987d4a...4c89) - mirroring the ORPRG authorization reference's own ref_artifact_digest binding",
+      "resolution_artifact": "the exact case-specific permit-receipt.json (file sha256 pinned per case above)"
+    },
+    "carrier_first_appraisal_sequence": [
+      "verify the signed authorization-ref carrier (ed25519)",
+      "confirm the carrier-embedded authorization reference matches the extracted authorization-ref view",
+      "resolve that reference to the exact case-specific permit-receipt.json",
+      "complete the PermitReceipt appraisal under the frozen policy, revocation state, verifier context, and trust inputs (shared/ pins above)"
+    ],
+    "appraisal_record_rule": "the owner-appraisal record is bound to that same referenced artifact and names the owner verifier and its result",
+    "distinction_preserved": "the final manifest and run record keep separate: (i) the AAC typed reference being cryptographically bound to the identified PermitReceipt artifact (permit_receipt_reference_bound), and (ii) that exact referenced PermitReceipt being successfully appraised under the frozen ORPRG policy, revocation state, verifier context, and trust inputs (permit_receipt_appraised). Same split on the mandate side (machine_mandate_reference_bound / machine_mandate_appraised). A bare document-digest match does not constitute authorization success; the composition result may be positive only after both reference-binding checks and both owner-appraisal gates pass."
+  },
+  "links": {
+    "permit_to_mandate": {
+      "relationship": "XREF (cross-reference-first baseline). The MachineMandate carries NO issuer-signed PermitReceipt reference; the relationship is carried by the signed AAC payload separately co-binding (a) the PermitReceipt authorization reference and (b) the MachineMandate commitment/credential reference.",
+      "equality": "NOT claimed - different preimages by construction (CP-JSON-2 canonical request bytes, 421 per case, vs jcs({action_id, outcome}), 91 bytes)"
+    },
+    "mandate_to_record": {
+      "relationship": "candidate equality of the request-side digest IF the Capsule computes effect.request_digest over the identical frozen action object with byte-identical canonicalization; pending the AAC v3 review record. Otherwise: XREF.",
+      "note": "effect.request_digest is not treated as proving both relationships unless equality to each independently frozen commitment is demonstrated"
+    },
+    "record_to_attestation": {
+      "relationship": "equality of the outcome digest value (response_digest), re-bound under a verifier-chosen fresh challenge per tyche-aep-qual-v1",
+      "note": "raw-32 bytes only inside the PCR fold; sha256: prefix only in Capsule JSON and transcript text; extraData = utf8(lowercase_hex(sha256(utf8(transcript)))), 64 bytes"
+    }
+  },
+  "cases": [
+    {
+      "id": 1,
+      "name": "positive path",
+      "frozen_orprg_case": "positive (tuple case_id 'positive'; artifacts pinned above)",
+      "mutation": "none",
+      "expected_gates": {
+        "permit_receipt_reference_bound": "PASS",
+        "permit_receipt_appraised": "PASS",
+        "machine_mandate_reference_bound": "PASS",
+        "machine_mandate_appraised": "PASS",
+        "machine_mandate_action_hash": "PASS",
+        "machine_mandate_spend": "PASS"
+      },
+      "expected_first_rejecting_gate": "none",
+      "expected_external_effect_commit_count": 1
+    },
+    {
+      "id": 2,
+      "name": "permit-reference failure",
+      "frozen_orprg_case": "none - composition-run mutation, not part of the frozen ORPRG tuple",
+      "mutation": "SINGLE mutation: the capsule's PermitReceipt authorization reference is replaced with a random digest (equivalently: omitted or left signature-uncovered)",
+      "expected_first_rejecting_gate": "permit_receipt_reference_bound",
+      "preceding_gates": "none precede it",
+      "expected_external_effect_commit_count": 0,
+      "expected": "fail closed"
+    },
+    {
+      "id": 3,
+      "name": "mandate spend-gate failure (over-limit)",
+      "frozen_orprg_case": "mandate-over-limit (tuple case_id 'mandate-over-limit'; artifacts pinned above; separately issued EUR 750.00 PermitReceipt bound to the exact EUR 750.00 protected request)",
+      "mutation": "SINGLE semantic mutation: requested.amount 25000 -> 75000 EUR minor units (composition path requested.amount = ORPRG path max_effect_budget); MachineMandate action object, action_hash, and scope.max_spend = 50000 UNCHANGED (amount is not part of the hash preimage)",
+      "derived_recomputations_not_additional_faults": [
+        "ORPRG canonical request bytes",
+        "ORPRG action_digest",
+        "PermitReceipt receipt_core and signature",
+        "PermitReceipt authorization reference and signed carrier",
+        "downstream Capsule content address and signatures when constructed"
+      ],
+      "expected_gates": {
+        "permit_receipt_reference_bound": "PASS",
+        "permit_receipt_appraised": "PASS (frozen ORPRG appraisal ALLOW)",
+        "machine_mandate_reference_bound": "PASS",
+        "machine_mandate_appraised": "PASS",
+        "machine_mandate_action_hash": "PASS",
+        "machine_mandate_spend": "DENY"
+      },
+      "expected_first_rejecting_gate": "machine_mandate_spend",
+      "preceding_gates": "ALL preceding gates expected to pass; the action-hash comparison passes before the spend check rejects",
+      "expected_external_effect_commit_count": 0,
+      "expected": "fail closed",
+      "audit_note": "a blocked or denied AAC Capsule may still be signed and transparency-registered; a SCITT Receipt is not an external-effect commit marker"
+    },
+    {
+      "id": 4,
+      "name": "outcome-digest representation failure",
+      "frozen_orprg_case": "none - composition-run mutation, not part of the frozen ORPRG tuple",
+      "mutation": "SINGLE mutation: at the record->attestation boundary the PCR fold consumes the 64 UTF-8 hex characters of response_digest instead of the 32 raw bytes",
+      "expected_first_rejecting_gate": "attestation PCR comparison (application-layer verifier recomputes from raw bytes)",
+      "preceding_gates": "all earlier gates PASS",
+      "expected_external_effect_commit_count": 0,
+      "expected": "fail closed"
+    },
+    {
+      "id": 5,
+      "name": "freshness failure (replayed quote)",
+      "frozen_orprg_case": "none - composition-run mutation, not part of the frozen ORPRG tuple",
+      "mutation": "SINGLE mutation: the quote is minted under a previous session's verifier nonce and replayed against the current fresh challenge",
+      "expected_first_rejecting_gate": "attestation qualifying-data (extraData) byte comparison",
+      "preceding_gates": "all earlier gates PASS",
+      "expected_external_effect_commit_count": 0,
+      "expected": "fail closed"
+    }
+  ],
+  "negative_case_output_semantics": {
+    "effect_commit_marker": "counts ONLY external-effect commits; expected zero in every negative case",
+    "audit_evidence": "a blocked or denied AAC Capsule may still be signed and registered as audit evidence - that is not a failure of the negative case",
+    "scitt_receipt": "a SCITT Receipt records statement registration; it is NOT an external-effect commit marker"
+  },
+  "evidentiary_status": {
+    "rule": "per Lee 2026-07-18 13:00 UTC: once Blockers 2 and 3 are closed against their immutable inputs, the complete Deliverable-B pre-run freeze is recorded; any result classification follows execution and review of the returned evidence",
+    "fallback": "if the freeze is not complete before execution, the run is the clearly labeled NON-EVIDENTIARY COMPOSITION REHEARSAL and nothing is claimed publicly; public posture HOLD"
+  },
+  "deliverable_A_chain_of_custody": {
+    "per": "Lee 2026-07-16 11:37 UTC",
+    "scope": "Deliverable A proceeds independently and unchanged against frozen ORPRG v2.2.6 (NOT the payment composition tuple)",
+    "transmission": "the runner transmits the raw evidence package directly on the review thread where practicable; alternatively the runner's ORIGINAL transmittal email is preserved and forwarded unmodified",
+    "package": "single archive, preserved without modification, accompanied by its own SHA-256 sidecar; contains identity+affiliation+independence confirmation, exact release-asset filenames + observed hashes, environment, exact commands, complete unmodified stdout/stderr, generated outputs + hash manifest, UTC timestamps; prescribed-replay results kept separate from targeted-review findings",
+    "runner_statement_template": "I had no role in building the ORPRG packet. On [UTC timestamp], I independently downloaded and hash-verified the frozen v2.2.6 release tuple, executed the unchanged archive in my own environment using the commands recorded in [evidence-package filename], and obtained the outputs and findings preserved in that package. The package SHA-256 is [hash].",
+    "attribution": "public attribution of the runner only with written permission; otherwise private review record only"
+  },
+  "hash_lock_note": "This manifest is hash-locked by quoting its own SHA-256 in the covering email and review record. Any change is issued as a NEW version under a NEW filename, never in place. v0.3 (sha256 907100ae683c3951ed06f67a567feedf10399b8d9045ad8f4ebc065361bd9287) remains on file unchanged.",
+  "changes_from_v0_3": [
+    "Blocker-1 ORPRG payment composition tuple pinned in full: release URL, tag ietf126-payment-composition-v0.1, full tag-target commit 5c2de6c3, the four explicit asset filenames + sha256 (auto-generated archives excluded), fixed verifier time, expected verifier summaries, and the independent verifications of record (Mih 2026-07-18; Tyche pre-issue check)",
+    "in-zip pins added: mapping-profile.json + expected-gates.json (paths + sha256 + profile ids), per-case protected-request / canonical-request / action-digest / permit-receipt / receipt-core / authorization-ref / signed carrier (paths + sha256 + commitments), shared ORPRG appraisal inputs (policy, rules, revocation, trust, verifier context)",
+    "single semantic mutation for the over-limit case recorded with its ORPRG/composition paths (requested.amount = max_effect_budget, 25000 -> 75000) and the derived-recomputation list verbatim from expected-gates.json (derived recomputations, not additional injected faults)",
+    "expected first rejecting gate and expected external-effect commit count pinned per case from expected-gates.json (positive: none / 1; over-limit: machine_mandate_spend / 0); six-gate table adopted, preserving the reference-bound vs appraised distinction per Lee 2026-07-18",
+    "AAC typed PermitReceipt reference pin added (artifact type, byte preimage, digest algorithm, digest; carrier-first appraisal sequence; appraisal record bound to the referenced artifact) - final wiring OWNER-CONFIRM: MIH with the v3 review",
+    "AAC entry updated: v3 posted at full immutable commit 46bfb4a1 (recorded by Lee 2026-07-17 21:41 UTC, owner review pending; not implied closed by Blocker-1)",
+    "one_protected_action issue RESOLVED via option (a): the tuple's two case-specific payment PermitReceipts replace the v2.2.6 data-egress vector as the composition permit-side; v2.2.6 remains the unchanged Deliverable-A replay target",
+    "blocker_status_at_issue and evidentiary_status sections added per Lee 2026-07-18 13:00 UTC record"
+  ]
+}
