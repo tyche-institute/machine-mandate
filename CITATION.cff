@@ -1,0 +1,62 @@
+# Machine-readable citation for the MachineMandate reproducible artifact.
+# GitHub renders a "Cite this repository" button from this file.
+# Schema: https://citation-file-format.github.io/
+
+cff-version: 1.2.0
+title: "MachineMandate — reproducible artifact: an action-sealed authority gate for autonomous agents in the EU Digital Identity Wallet"
+message: "If you use this artifact in academic work, please cite the preprint (see preferred-citation)."
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/tyche-institute/machine-mandate"
+url: "https://github.com/tyche-institute/machine-mandate"
+date-released: "2026-07-07"
+
+authors:
+  - family-names: "Sokolov"
+    given-names: "Anton"
+    orcid: "https://orcid.org/0000-0003-2452-7096"
+    affiliation: "Tyche Institute, Tallinn, Estonia"
+    email: "anton.sokolov@tyche.institute"
+
+keywords:
+  - "MachineMandate"
+  - "EU Digital Identity Wallet"
+  - "OpenID4VP"
+  - "SD-JWT VC"
+  - "agent authorisation"
+  - "remote attestation"
+  - "trusted list"
+  - "ETSI TS 119 612"
+  - "reproducible artifact"
+
+abstract: >
+  A MachineMandate is a selective-disclosure JSON Web Token verifiable
+  credential that binds a bounded grant of authority to one exact action
+  through an action-hash tamper-seal. It is presented over OpenID for
+  Verifiable Presentations to a four-gate verifier that denies
+  out-of-mandate actions: credential cryptography, attestation freshness,
+  issuer listing in a trusted list, and mandate-constraint enforcement.
+  This repository reproduces the gate-ablation table of the accompanying
+  preprint from a single command. It is a research artifact: the trust
+  anchors are synthetic, the attestation root is a software TPM, and
+  nothing here is an eIDAS trust service or carries legal effect.
+
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21229865"
+    description: "Preprint (concept DOI, all versions)"
+  - type: doi
+    value: "10.5281/zenodo.21229257"
+    description: "Real-phone evidence bundle (concept DOI, all versions)"
+
+preferred-citation:
+  type: article
+  title: "Enforcement, not Alignment: an Action-Sealed Authority Gate for Autonomous AI Agents in the EU Digital Identity Wallet"
+  authors:
+    - family-names: "Sokolov"
+      given-names: "Anton"
+      orcid: "https://orcid.org/0000-0003-2452-7096"
+      affiliation: "Tyche Institute, Tallinn, Estonia"
+  year: 2026
+  doi: "10.5281/zenodo.21229865"
+  url: "https://doi.org/10.5281/zenodo.21229865"
