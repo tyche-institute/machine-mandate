@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vocab.tyche.institute/schema/deliverable-b-evidence-v0.1.json",
+  "title": "Deliverable-B engineering-validation run record",
+  "type": "object",
+  "required": [
+    "case_count",
+    "classification",
+    "final_evidence_authorized",
+    "input_pins",
+    "result",
+    "started_at",
+    "completed_at"
+  ],
+  "properties": {
+    "case_count": {
+      "const": 5
+    },
+    "classification": {
+      "const": "ENGINEERING VALIDATION — NON-EVIDENTIARY — NOT A DELIVERABLE-B RESULT"
+    },
+    "final_evidence_authorized": {
+      "const": false
+    },
+    "input_pins": {
+      "type": "object",
+      "required": [
+        "manifest_sha256",
+        "machine_mandate_runtime",
+        "aac_rehearsal",
+        "aep",
+        "scitt_cose_rehearsal"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "machine_mandate_runtime": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "aac_rehearsal": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "aep": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "scitt_cose_rehearsal": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "result": {
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": true
+}

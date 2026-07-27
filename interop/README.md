@@ -7,6 +7,10 @@ against bytes rather than taken on trust.
 
 | File | What it is |
 |:--|:--|
+| `deliverable_b_runner.py` | fail-closed five-case engineering-validation runner; deliberately refuses final/evidentiary mode |
+| `DELIVERABLE-B-RUNNER.md` | runner boundary, evidence inventory and invocation |
+| `deliverable-b-evidence-schema-v0.1.json` | machine-readable rehearsal run-record constraints |
+| `deliverable-b-v0.6-readiness.md` | candidate immutable coordinates and the remaining authorization gates; not an issued manifest |
 | `composition-input-manifest-v0.5.json` | the governing composition input manifest, sha256 `7d76335f…a882` |
 | `composition-input-manifest-v0.4.json` | the preceding version, sha256 `db9cf7f2…9b3f`, kept on file unchanged |
 | `mint_run_credential.py` | mints the single MachineMandate run credential and self-checks it |
