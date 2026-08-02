@@ -1,0 +1,91 @@
+{
+  "artifact_type": "machine-mandate",
+  "canonicalization": "jcs-s (name pending registry decision; semantics: RFC 8785 subset - code-point key sort, no insignificant whitespace, UTF-8, NO member removal, integer-only numbers)",
+  "version": "0.1",
+  "source_commit": null,
+  "positive": [
+    {
+      "id": "mm-kat-01-credential-derived-identifier",
+      "description": "Derived identifier = SHA-256 over the exact issuer-signed JWT component bytes (first ~-separated component as transmitted). Field set: every issuer-signed claim as serialized; exclusion set: everything after the first ~. Representation: BARE 64-char lowercase hex.",
+      "preimage_file": "interop/run-credential-preimage.jwt",
+      "preimage_length_bytes": 1190,
+      "expected_digest_bare_hex": "5df4d32df57650f27b6a65df041b708de80d69c0ca82a1044334f5e2edef5ce2"
+    },
+    {
+      "id": "mm-kat-02-action-object-digest",
+      "description": "Bound action digest (action_hash claim): field set exactly {action_id, outcome}, exclusion set empty. Representation: sha256:-prefixed lowercase hex.",
+      "input": {
+        "action_id": "pay-invoice/acme-corp",
+        "outcome": "eur:250:acme-corp:vienna-interop-2026-001"
+      },
+      "canonical_bytes_hex": "7b22616374696f6e5f6964223a227061792d696e766f6963652f61636d652d636f7270222c226f7574636f6d65223a226575723a3235303a61636d652d636f72703a7669656e6e612d696e7465726f702d323032362d303031227d",
+      "canonical_length_bytes": 91,
+      "expected_digest_prefixed": "sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299"
+    },
+    {
+      "id": "mm-kat-03-key-order-invariance",
+      "description": "Member order in the input object MUST NOT change the digest (keys sort by code point).",
+      "input_permuted": {
+        "outcome": "eur:250:acme-corp:vienna-interop-2026-001",
+        "action_id": "pay-invoice/acme-corp"
+      },
+      "expected_digest_prefixed": "sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299",
+      "must_equal": "mm-kat-02-action-object-digest.expected_digest_prefixed"
+    },
+    {
+      "id": "mm-kat-04-non-ascii-utf8",
+      "description": "Non-ASCII values serialize as raw UTF-8 (ensure_ascii=false); pins the UTF-8 rule.",
+      "input": {
+        "action_id": "pay/åäö-№5",
+        "outcome": "€250:тест"
+      },
+      "canonical_bytes_hex": "7b22616374696f6e5f6964223a227061792fc3a5c3a4c3b62de2849635222c226f7574636f6d65223a22e282ac3235303ad182d0b5d181d182227d",
+      "expected_digest_prefixed": "sha256:39d57888cb91fe6145c44eef93470c15ef848630c41737a05133c3c814124639"
+    }
+  ],
+  "negative": [
+    {
+      "id": "mm-fail-01-member-removal-discriminator",
+      "description": "THE jcs-s vs jcs-n DISCRIMINATOR. jcs-s retains null/empty members; jcs-n removes them. An implementation that removes members produces wrong_digest_jcs_n and MUST FAIL this vector.",
+      "input": {
+        "a": null,
+        "b": [],
+        "c": {},
+        "d": 1
+      },
+      "expected_digest_prefixed_jcs_s": "sha256:335b45b0046819a5371024119929dc9b9643a34e5d2c75893306b971383edbbe",
+      "wrong_digest_prefixed_jcs_n": "sha256:99e6326a5a58748fb618850ce96523d192332126fbaeafd073b004f75148fdd3",
+      "must_fail_if_digest_equals": "wrong_digest_prefixed_jcs_n"
+    },
+    {
+      "id": "mm-fail-02-float-rejected",
+      "description": "Numbers are restricted to integers (ES6 number formatting per RFC 8785 3.2.2 is not implemented). A producer MUST reject a payload containing a non-integer number rather than serialize it.",
+      "input": {
+        "action_id": "x",
+        "amount": 1.5
+      },
+      "expected": "REJECT (non-integer number)"
+    },
+    {
+      "id": "mm-fail-03-trailing-newline",
+      "description": "The credential preimage is the exact transmitted bytes; appending a single 0x0A changes the identifier. Pins byte-exactness.",
+      "preimage_file": "interop/run-credential-preimage.jwt",
+      "mutation": "append 0x0A",
+      "wrong_digest_bare_hex": "7a42095703d7149938f1962b906f0b4a2159d41ba060a688729fa17fb776268a",
+      "must_not_equal": "mm-kat-01-credential-derived-identifier.expected_digest_bare_hex"
+    },
+    {
+      "id": "mm-fail-04-representation-confusion",
+      "description": "Representations are not interchangeable: the derived identifier is BARE hex; claim-level hashes carry the sha256: prefix. Comparing one form against the other MUST fail rather than normalise.",
+      "bare_form_of_kat02": "a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299",
+      "prefixed_form_of_kat02": "sha256:a89fbd2bd6f95cdb1ec27b6c7253770ff2a22220937cf065f6e45ef67b37e299",
+      "expected": "REJECT on form mismatch (no silent stripping/adding of the prefix)"
+    },
+    {
+      "id": "mm-fail-05-uppercase-hex",
+      "description": "Identifier validation is exactly [0-9a-f]{64}; uppercase hex MUST be rejected, not case-folded.",
+      "input_digest": "5DF4D32DF57650F27B6A65DF041B708DE80D69C0CA82A1044334F5E2EDEF5CE2",
+      "expected": "REJECT (fails [0-9a-f]{64})"
+    }
+  ]
+}
