@@ -1,18 +1,53 @@
 {
   "kat_id": "exclusion-depth-fork-001",
-  "source": "P2 finding, CPB PR#2 review; machine-checked in Lean 4 (theorem Jcss.exclusion_depth_fork, jcss/Jcss/Basic.lean, kernel-checked by decide, axioms: propext/Classical.choice/Quot.sound only)",
+  "version": 2,
+  "revised": "2026-08-02",
+  "revision_note": "v1 pinned f68308d4... as THE wrong-policy output without naming an algorithm. Under jcs-n — the algorithm the P2 review concerned — no implementation emits those bytes: {\"sub\":{}} is the pre-normalization intermediate, and normalization then removes the emptied member. This is a SCOPING fix, not a retraction: the MUST side (1fa18622...) and the fork itself are unchanged and remain correct. Every digest below is now scoped to a named algorithm.",
+  "source": "P2 finding, CPB PR#2 review (reference: draft-mih-sokolov-scitt-payload-binding-00 §3.1/§4); machine-checked in Lean 4 (jcss/Jcss/Basic.lean, jcss/Jcss/Removal.lean; every pinned byte string kernel-checked by `decide`; axiom closure {propext, Classical.choice, Quot.sound}, sorry count 0)",
   "witness_value": {"id": "x", "sub": {"id": "y"}},
   "exclusion_set": ["id"],
-  "top_level_strip": {
+  "pipeline": {
+    "jcs-n": "CANONICAL-DIGEST(jcs-n, P) = lowercase_hex(SHA-256(JCS(normalize(P minus exclusion_set)))) — exclusion FIRST, then normalization, then JCS.",
+    "jcs-s": "CANONICAL-DIGEST(jcs-s, P) = lowercase_hex(SHA-256(JCS(P minus exclusion_set))) — no normalization pass; null / empty-array / empty-object members are retained.",
+    "normalize": "Absent-field normalization (§3.1 step 1): remove, bottom-up and recursively, every OBJECT MEMBER whose value is JSON null, an empty array, or an empty object. Array elements are recursed into but never removed."
+  },
+  "must_pass": {
+    "policy": "top-level-only exclusion (conforming)",
+    "algorithms": ["jcs-n", "jcs-s"],
     "result": {"sub": {"id": "y"}},
     "jcs_bytes": "{\"sub\":{\"id\":\"y\"}}",
-    "sha256": "1fa18622ca9a754310d22ba32ce52e5e9d4f77c2226567727aeb9dedd66e9fa7"
+    "sha256": "1fa18622ca9a754310d22ba32ce52e5e9d4f77c2226567727aeb9dedd66e9fa7",
+    "lean_theorems": {
+      "jcs-s": "Jcss.fork_bytes_top",
+      "jcs-n": "Jcss.fork_bytes_top_n",
+      "normalization_is_a_no_op_here": "Jcss.normalize_noop_on_top"
+    },
+    "note": "One digest serves BOTH algorithms: nothing in the top-level-stripped witness is null, an empty array, or an empty object, so normalization is the identity on this branch. That invariance is what makes the MUST side algorithm-independent."
   },
-  "recursive_strip": {
-    "result": {"sub": {}},
-    "jcs_bytes": "{\"sub\":{}}",
-    "sha256": "f68308d4e5bde0822675e52d656d5c46af2ba15adadad2abee2fc33709ccccb1"
-  },
-  "rule": "Exclusion of keys is TOP-LEVEL-ONLY. A conforming implementation canonicalizing the witness with exclusion set {id} MUST produce the top_level_strip digest (1fa18622...). An implementation producing the recursive_strip digest (f68308d4...) MUST FAIL this KAT.",
-  "digests_computed_by": "python3 jcs.py (audited reference, mm-vectors/deps/jcs.py); byte-level agreement with the Lean serializer verified on both values"
+  "must_fail": [
+    {
+      "diagnosis": "recursive exclusion under jcs-s",
+      "policy": "exclusion applied recursively at every object level (non-conforming)",
+      "algorithm": "jcs-s",
+      "result": {"sub": {}},
+      "jcs_bytes": "{\"sub\":{}}",
+      "sha256": "f68308d4e5bde0822675e52d656d5c46af2ba15adadad2abee2fc33709ccccb1",
+      "lean_theorem": "Jcss.fork_bytes_rec",
+      "note": "jcs-s performs no member removal, so the emptied \"sub\" member survives into the hashed bytes. These bytes are ALSO the pre-normalization intermediate of the jcs-n wrong branch, which is exactly why they must not be attributed to jcs-n."
+    },
+    {
+      "diagnosis": "recursive exclusion under jcs-n",
+      "policy": "exclusion applied recursively at every object level (non-conforming)",
+      "algorithm": "jcs-n",
+      "result": {},
+      "jcs_bytes": "{}",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "lean_theorem": "Jcss.fork_bytes_rec_n",
+      "supporting_lean_theorem": "Jcss.normalize_collapses_rec",
+      "note": "Recursive stripping empties the \"sub\" object; §3.1 normalization then deletes that member outright, collapsing the value to the empty object."
+    }
+  ],
+  "rule": "Exclusion of keys is TOP-LEVEL-ONLY. A conforming implementation canonicalizing the witness with exclusion set {id} MUST produce 1fa18622... under either algorithm. A recursively-stripping implementation MUST FAIL this KAT, and its observed digest identifies which algorithm it runs: f68308d4... under jcs-s, 44136fa3... under jcs-n. The two wrong-policy outputs differ because under jcs-n the member emptied by recursive stripping is subsequently REMOVED by absent-field normalization, whereas jcs-s performs no member removal and retains it. Accordingly {\"sub\":{}} is never the hashed input of a jcs-n implementation — under jcs-n it is only the pre-normalization intermediate — so a diagnosis pinning it without naming jcs-s is unscoped and will not match the implementation it is meant to catch.",
+  "separation_claim": "The three byte strings are pairwise distinct; machine-checked as Jcss.exclusion_depth_three_way. The fork survives normalization: Jcss.exclusion_depth_fork (bare strip policies, jcs-s bytes) and Jcss.exclusion_depth_fork_n (composed with normalization, jcs-n bytes).",
+  "digests_computed_by": "Recomputed 2026-08-02 by two independent implementations that agreed on every byte string and every digest: (1) a standard-library-only Python script (hand-written RFC 8785 serializer for this subset + hashlib); (2) the CPB reference implementation cpb.canonicalize (normalize / jcs / canonical_digest) from scitt-payload-binding. Both agree byte-for-byte with the Lean-pinned strings above."
 }

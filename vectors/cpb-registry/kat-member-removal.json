@@ -1,17 +1,40 @@
 {
   "kat_id": "member-removal-fork-001",
-  "source": "mm-fail-01 discriminator (jcs-s vs jcs-n), CPB-registry vector set v0.1; machine-checked in Lean 4 (theorem Jcss.member_removal_fork, jcss/Jcss/Removal.lean, kernel-checked, axioms: propext/Classical.choice/Quot.sound only)",
+  "version": 2,
+  "revised": "2026-08-02",
+  "revision_note": "Re-verified 2026-08-02 against the same defect class as exclusion-depth-fork-001 (a wrong-policy digest pinned without naming its algorithm). No defect found: this KAT already scopes each digest to a named algorithm, and it is the discriminator BETWEEN the two algorithms, so there is no third output to carry. v2 adds the explicit algorithm/theorem mapping per digest, the pipeline statement, and a recorded normalization-fixpoint check.",
+  "source": "mm-fail-01 discriminator (jcs-s vs jcs-n), CPB-registry vector set v0.1 (reference: draft-mih-sokolov-scitt-payload-binding-00 §3.1); machine-checked in Lean 4 (jcss/Jcss/Removal.lean; every pinned byte string kernel-checked, axiom closure {propext, Classical.choice, Quot.sound}, sorry count 0)",
   "witness_value": {"a": null, "b": [], "c": {}, "d": 1},
-  "jcs_s": {
+  "exclusion_set": [],
+  "pipeline": {
+    "jcs-n": "CANONICAL-DIGEST(jcs-n, P) = lowercase_hex(SHA-256(JCS(normalize(P)))) — absent-field normalization removes object members whose value is null, an empty array, or an empty object.",
+    "jcs-s": "CANONICAL-DIGEST(jcs-s, P) = lowercase_hex(SHA-256(JCS(P))) — no normalization pass; those members are retained.",
+    "note": "This witness carries no exclusion set: it isolates the member-removal pass alone, independently of the exclusion-depth question tested by exclusion-depth-fork-001."
+  },
+  "must_pass": {
+    "policy": "no member removal (conforming for jcs-s)",
+    "algorithm": "jcs-s",
     "result": {"a": null, "b": [], "c": {}, "d": 1},
     "jcs_bytes": "{\"a\":null,\"b\":[],\"c\":{},\"d\":1}",
-    "sha256": "335b45b0046819a5371024119929dc9b9643a34e5d2c75893306b971383edbbe"
+    "sha256": "335b45b0046819a5371024119929dc9b9643a34e5d2c75893306b971383edbbe",
+    "lean_theorem": "Jcss.removal_bytes_id",
+    "registry_field": "mm-fail-01 expected_digest_prefixed_jcs_s"
   },
-  "jcs_n": {
-    "result": {"d": 1},
-    "jcs_bytes": "{\"d\":1}",
-    "sha256": "99e6326a5a58748fb618850ce96523d192332126fbaeafd073b004f75148fdd3"
-  },
-  "rule": "Implementations of jcs-s MUST retain null / empty-array / empty-object object members. A conforming implementation canonicalizing the witness MUST produce the jcs_s digest (335b45b0...). An implementation producing the jcs_n digest (99e6326a...) performs member removal and MUST FAIL this KAT.",
-  "digests_computed_by": "python3 jcs.py (audited reference, mm-vectors/deps/jcs.py) + gen_vectors.py::jcs_n removal pass; byte-level agreement with the Lean serializer verified on both values (theorems removal_bytes_id / removal_bytes_stripped); digests equal mm-fail-01 expected_digest_prefixed_jcs_s / wrong_digest_prefixed_jcs_n"
+  "must_fail": [
+    {
+      "diagnosis": "member removal performed while claiming jcs-s",
+      "policy": "bottom-up removal of null / empty-array / empty-object members",
+      "algorithm": "jcs-n",
+      "result": {"d": 1},
+      "jcs_bytes": "{\"d\":1}",
+      "sha256": "99e6326a5a58748fb618850ce96523d192332126fbaeafd073b004f75148fdd3",
+      "lean_theorem": "Jcss.removal_bytes_stripped",
+      "supporting_lean_theorem": "Jcss.strip_wNull",
+      "registry_field": "mm-fail-01 wrong_digest_prefixed_jcs_n",
+      "note": "This is the CORRECT jcs-n digest for this witness. It is a MUST-FAIL only for an implementation declaring jcs-s; the entry is a mislabelling discriminator, not an implementation bug in jcs-n."
+    }
+  ],
+  "rule": "Implementations of jcs-s MUST retain null / empty-array / empty-object object members. A conforming jcs-s implementation canonicalizing the witness MUST produce 335b45b0.... An implementation producing 99e6326a... is running the jcs-n member-removal pass and MUST FAIL this KAT when it declares jcs-s. Both digests are algorithm-scoped: this vector discriminates jcs-s from jcs-n and each side is the correct output of its own algorithm — neither is a pre-normalization intermediate, so unlike exclusion-depth-fork-001 there is no third output to carry.",
+  "normalization_interaction_check": "Verified 2026-08-02 that jcs-n normalization does not interact with this witness beyond the modelled removal: normalize(W) = {\"d\":1}, and normalize(normalize(W)) = {\"d\":1}, i.e. one pass reaches a fixpoint and no cascade removal occurs (no member becomes empty as a consequence of an inner removal). The result equals the Lean model output Jcss.stripNullsEmpty wNull (theorem Jcss.strip_wNull). Cascade behaviour is exercised separately by Jcss.removal_bottom_up, and the array-element exemption by Jcss.removal_keeps_array_elements.",
+  "digests_computed_by": "Recomputed 2026-08-02 by two independent implementations that agreed on every byte string and every digest: (1) a standard-library-only Python script (hand-written RFC 8785 serializer for this subset + hashlib); (2) the CPB reference implementation cpb.canonicalize (normalize / jcs / canonical_digest) from scitt-payload-binding. Both agree byte-for-byte with the Lean-pinned strings above, and the digests equal the mm-fail-01 registry fields."
 }
