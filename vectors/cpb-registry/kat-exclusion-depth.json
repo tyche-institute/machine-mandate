@@ -1,0 +1,18 @@
+{
+  "kat_id": "exclusion-depth-fork-001",
+  "source": "P2 finding, CPB PR#2 review; machine-checked in Lean 4 (theorem Jcss.exclusion_depth_fork, jcss/Jcss/Basic.lean, kernel-checked by decide, axioms: propext/Classical.choice/Quot.sound only)",
+  "witness_value": {"id": "x", "sub": {"id": "y"}},
+  "exclusion_set": ["id"],
+  "top_level_strip": {
+    "result": {"sub": {"id": "y"}},
+    "jcs_bytes": "{\"sub\":{\"id\":\"y\"}}",
+    "sha256": "1fa18622ca9a754310d22ba32ce52e5e9d4f77c2226567727aeb9dedd66e9fa7"
+  },
+  "recursive_strip": {
+    "result": {"sub": {}},
+    "jcs_bytes": "{\"sub\":{}}",
+    "sha256": "f68308d4e5bde0822675e52d656d5c46af2ba15adadad2abee2fc33709ccccb1"
+  },
+  "rule": "Exclusion of keys is TOP-LEVEL-ONLY. A conforming implementation canonicalizing the witness with exclusion set {id} MUST produce the top_level_strip digest (1fa18622...). An implementation producing the recursive_strip digest (f68308d4...) MUST FAIL this KAT.",
+  "digests_computed_by": "python3 jcs.py (audited reference, mm-vectors/deps/jcs.py); byte-level agreement with the Lean serializer verified on both values"
+}
