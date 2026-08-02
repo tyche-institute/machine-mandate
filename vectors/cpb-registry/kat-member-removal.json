@@ -1,0 +1,17 @@
+{
+  "kat_id": "member-removal-fork-001",
+  "source": "mm-fail-01 discriminator (jcs-s vs jcs-n), CPB-registry vector set v0.1; machine-checked in Lean 4 (theorem Jcss.member_removal_fork, jcss/Jcss/Removal.lean, kernel-checked, axioms: propext/Classical.choice/Quot.sound only)",
+  "witness_value": {"a": null, "b": [], "c": {}, "d": 1},
+  "jcs_s": {
+    "result": {"a": null, "b": [], "c": {}, "d": 1},
+    "jcs_bytes": "{\"a\":null,\"b\":[],\"c\":{},\"d\":1}",
+    "sha256": "335b45b0046819a5371024119929dc9b9643a34e5d2c75893306b971383edbbe"
+  },
+  "jcs_n": {
+    "result": {"d": 1},
+    "jcs_bytes": "{\"d\":1}",
+    "sha256": "99e6326a5a58748fb618850ce96523d192332126fbaeafd073b004f75148fdd3"
+  },
+  "rule": "Implementations of jcs-s MUST retain null / empty-array / empty-object object members. A conforming implementation canonicalizing the witness MUST produce the jcs_s digest (335b45b0...). An implementation producing the jcs_n digest (99e6326a...) performs member removal and MUST FAIL this KAT.",
+  "digests_computed_by": "python3 jcs.py (audited reference, mm-vectors/deps/jcs.py) + gen_vectors.py::jcs_n removal pass; byte-level agreement with the Lean serializer verified on both values (theorems removal_bytes_id / removal_bytes_stripped); digests equal mm-fail-01 expected_digest_prefixed_jcs_s / wrong_digest_prefixed_jcs_n"
+}
