@@ -1,0 +1,65 @@
+{
+  "kat_id": "identifier-grammar-surrounding-whitespace-001",
+  "version": 1,
+  "created": "2026-08-03",
+  "clause": "C15",
+  "source": "spec-mutation day 1, surviving mutant M11 (surrounding-whitespace-tolerance).",
+  "rule": "Same clause pair as the trailing-newline vector (\u00a74.1 grammar, \u00a76.1 consistency-with-context, \u00a74 recomputation), and the same MUST-FAIL construction: a hex digest padded with spaces or tabs is not a 64-character lowercase hex string. A verifier MUST NOT trim the padding before comparing. Split from the newline vector on purpose: an implementation may tolerate one whitespace class and not the other, and a single combined vector would not say which.",
+  "artifact_type": "cpb-day2-artifact",
+  "carried_field": "payload_id",
+  "exclusion_set": [
+    "payload_id"
+  ],
+  "registry_entry": {
+    "name": "cpb-day2-artifact",
+    "algorithm": "jcs-n",
+    "exclusion_set": [
+      "payload_id"
+    ],
+    "representation": "bare_hex",
+    "digest_context": "jcs-n; exclusion set {payload_id}; 64-char lowercase hex"
+  },
+  "cited_artifact": {
+    "algorithm": "jcs-n",
+    "payload": {
+      "action": "read",
+      "resource": "sensor-7"
+    },
+    "jcs_bytes": "{\"action\":\"read\",\"resource\":\"sensor-7\"}",
+    "jcs_bytes_hex": "7b22616374696f6e223a2272656164222c227265736f75726365223a2273656e736f722d37227d",
+    "sha256": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37",
+    "note": "No member is null, an empty array, or an empty object, so the jcs-s digest of the same payload is the same value (2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37); the vector is about the CARRIER of the identifier, not about the canonicalization, and holds under either algorithm."
+  },
+  "must_pass": {
+    "carried_identifier": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37",
+    "surfaces": [
+      "typed_ref",
+      "carried_id"
+    ],
+    "note": "Positive control: the well-formed identifier MUST verify."
+  },
+  "must_fail": [
+    {
+      "case_id": "typed-ref-surrounding-spaces",
+      "surface": "typed_ref",
+      "carried_identifier": " 2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37 ",
+      "failure_reason": "representation_mismatch_surrounding_spaces",
+      "expected_error": "RepresentationMismatchError (\u00a74.1 / \u00a76.1)"
+    },
+    {
+      "case_id": "typed-ref-leading-tab",
+      "surface": "typed_ref",
+      "carried_identifier": "\t2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37",
+      "failure_reason": "representation_mismatch_leading_tab",
+      "expected_error": "RepresentationMismatchError (\u00a74.1 / \u00a76.1)"
+    },
+    {
+      "case_id": "carried-id-surrounding-spaces",
+      "surface": "carried_id",
+      "carried_identifier": " 2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37 ",
+      "failure_reason": "carried_identifier_mismatch_surrounding_spaces",
+      "expected_error": "CarriedIdMismatch (\u00a74)"
+    }
+  ],
+  "digests_computed_by": "The single pinned digest was recomputed 2026-08-03 by two implementations that agreed byte-for-byte: a standard-library-only RFC 8785 serializer written for this run, and the CPB reference cpb.canonicalize at 7c9f6421. Harness: day2/day2_vectors.py."
+}

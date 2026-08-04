@@ -1,0 +1,60 @@
+{
+  "kat_id": "identifier-grammar-trailing-newline-001",
+  "version": 1,
+  "created": "2026-08-03",
+  "clause": "C15",
+  "source": "spec-mutation day 1, surviving mutant M10 (trailing-newline-tolerance).",
+  "rule": "\u00a74.1 declares the bare representation to be a 64-character lowercase hex string, and states that the listed representations are distinct and not interchangeable. \u00a76.1 requires the verifier to confirm that the identifier carried by the reference is consistent with the established context and, where it is not, MUST NOT report the reference as verified; \u00a74 requires the verifier to recompute the derived identifier and to treat a mismatch with the carried value as a defect. A 65-character string ending in U+000A is not a 64-character lowercase hex string, so a verifier MUST reject it -- it MUST NOT strip the newline and compare the remainder. This is a MUST-FAIL vector: no positive vector can discriminate, because a tolerant verifier accepts every well-formed identifier a strict verifier accepts.",
+  "artifact_type": "cpb-day2-artifact",
+  "carried_field": "payload_id",
+  "exclusion_set": [
+    "payload_id"
+  ],
+  "registry_entry": {
+    "name": "cpb-day2-artifact",
+    "algorithm": "jcs-n",
+    "exclusion_set": [
+      "payload_id"
+    ],
+    "representation": "bare_hex",
+    "digest_context": "jcs-n; exclusion set {payload_id}; 64-char lowercase hex"
+  },
+  "cited_artifact": {
+    "algorithm": "jcs-n",
+    "payload": {
+      "action": "read",
+      "resource": "sensor-7"
+    },
+    "jcs_bytes": "{\"action\":\"read\",\"resource\":\"sensor-7\"}",
+    "jcs_bytes_hex": "7b22616374696f6e223a2272656164222c227265736f75726365223a2273656e736f722d37227d",
+    "sha256": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37",
+    "note": "No member is null, an empty array, or an empty object, so the jcs-s digest of the same payload is the same value (2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37); the vector is about the CARRIER of the identifier, not about the canonicalization, and holds under either algorithm."
+  },
+  "must_pass": {
+    "carried_identifier": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37",
+    "surfaces": [
+      "typed_ref",
+      "carried_id"
+    ],
+    "note": "Positive control: the well-formed identifier MUST verify."
+  },
+  "must_fail": [
+    {
+      "case_id": "typed-ref-trailing-newline",
+      "surface": "typed_ref",
+      "carried_identifier": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37\n",
+      "failure_reason": "representation_mismatch_trailing_newline",
+      "expected_error": "RepresentationMismatchError (\u00a74.1 / \u00a76.1)",
+      "note": "65 characters; the first 64 are the correct digest. The realistic provenance is an identifier read from a file written by a shell redirect."
+    },
+    {
+      "case_id": "carried-id-trailing-newline",
+      "surface": "carried_id",
+      "carried_identifier": "2f9bba43e30273e2e87c7ef659a0f36f1e11f8e0c10489afe4d267c996505c37\n",
+      "failure_reason": "carried_identifier_mismatch_trailing_newline",
+      "expected_error": "CarriedIdMismatch (\u00a74)"
+    }
+  ],
+  "upstream_integration_note": "If this vector is reshaped as a CPB Category-G vector, the repository's own checker will currently reject it. .github/check_vectors.py line 75 compiles the bare-hex grammar as re.compile(r'^[0-9a-f]{64}$'), and in Python '$' also matches immediately before a trailing newline, so that pattern accepts the 65-character string this vector is built from and the Category-G classifier would report it as 'a syntactically valid bare 64-char lowercase-hex representation ... differs only in content, not representation'. In other words the tolerance modelled by mutant M10 is also present, independently, in the checker's grammar gate. The fix is to anchor with r'\\Z' (or re.fullmatch with r'\\Z'). Verified in this run against the pattern text at 7c9f6421; the leading/trailing-space cases of the sibling vector are unaffected.",
+  "digests_computed_by": "The single pinned digest was recomputed 2026-08-03 by two implementations that agreed byte-for-byte: a standard-library-only RFC 8785 serializer written for this run, and the CPB reference cpb.canonicalize at 7c9f6421. Harness: day2/day2_vectors.py."
+}

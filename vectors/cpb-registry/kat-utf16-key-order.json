@@ -1,0 +1,116 @@
+{
+  "kat_id": "utf16-key-order-fork-001",
+  "version": 1,
+  "created": "2026-08-03",
+  "clause": "C05",
+  "source": "spec-mutation day 1, surviving mutant M08 (codepoint-key-sort). draft-mih-sokolov-scitt-payload-binding-00 \u00a73.1 step 2 imports RFC 8785 whole; RFC 8785 \u00a73.2.3 sorts member names on their UTF-16 code units. NOT machine-checked: the Jcss Lean development models key order as `KeysSorted` (Lean String `<`, i.e. code points) and no theorem uses that predicate, so the ordering clause is outside the formalized fragment. See DAY2-REPORT.md \u00a73.",
+  "rule": "Member names MUST be sorted by UTF-16 code unit, not by Unicode code point (RFC 8785 \u00a73.2.3, imported by \u00a73.1 step 2). The two orders coincide on every member name inside the Basic Multilingual Plane and diverge only above U+FFFF, because a non-BMP name begins with a high surrogate in D800-DBFF, which is numerically below any BMP name in E000-FFFF while its code point is above. An implementation that produces a must_fail digest below sorts on code points and MUST FAIL this KAT. A vector corpus containing no member name above U+FFFF cannot distinguish the two policies at all.",
+  "why_no_corpus_vector_catches_this": "Every member name in vectors/ at 7c9f6421 is BMP (verified by per-character scan on day 1), and on BMP-only inputs the two sort orders are extensionally equal, so no BMP-only corpus can ever kill this mutant.",
+  "rfc8785_primary_source": {
+    "retrieved": "2026-08-03 from https://www.rfc-editor.org/rfc/rfc8785.txt",
+    "section": "3.2.3 Sorting of Object Properties",
+    "requirement_quote": "Property name strings to be sorted are formatted as arrays of UTF-16 [UNICODE] code units.  The sorting is based on pure value comparisons, where code units are treated as unsigned integers, independent of locale settings.",
+    "rfc_note_on_this_exact_divergence": "Note: For the purpose of obtaining a deterministic property order, sorting of data encoded in UTF-8 or UTF-32 would also work, but the outcome for JSON data like above would differ and thus be incompatible with this specification.  However, in practice, property names are rarely defined outside of 7-bit ASCII, making it possible to sort string data in UTF-8 or UTF-32 format without conversion to UTF-16 and still be compatible with JCS.",
+    "note": "A code-point sort is exactly the UTF-32 sort the RFC names as incompatible, and the RFC's own second sentence is the reason a corpus never notices: names outside 7-bit ASCII are rare. The case 'rfc8785-sorting-example' below is the RFC's test data verbatim, and its must_pass byte string reproduces the RFC's stated expected argument order.",
+    "rfc_expected_argument_order": [
+      "Carriage Return",
+      "One",
+      "Control",
+      "Latin Small Letter O With Diaeresis",
+      "Euro Sign",
+      "Emoji: Grinning Face",
+      "Hebrew Letter Dalet With Dagesh"
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "minimal",
+      "note": "Two members only. U+1F600 GRINNING FACE (UTF-16 D83D DE00) and U+FB33 HEBREW LETTER DALET WITH DAGESH (UTF-16 FB33). UTF-16 order puts the emoji first (D83D < FB33); code-point order puts it last (0x1F600 > 0xFB33).",
+      "witness_value": {
+        "\ud83d\ude00": 1,
+        "\ufb33": 2
+      },
+      "member_names": [
+        {
+          "name": "\ud83d\ude00",
+          "code_point": "U+1F600",
+          "utf16_code_units": [
+            "D83D",
+            "DE00"
+          ]
+        },
+        {
+          "name": "\ufb33",
+          "code_point": "U+FB33",
+          "utf16_code_units": [
+            "FB33"
+          ]
+        }
+      ],
+      "must_pass": {
+        "policy": "sort on UTF-16 code units (conforming)",
+        "algorithms": [
+          "jcs-n",
+          "jcs-s"
+        ],
+        "jcs_bytes": "{\"\ud83d\ude00\":1,\"\ufb33\":2}",
+        "jcs_bytes_hex": "7b22f09f9880223a312c22efacb3223a327d",
+        "sha256": "2aa3f5086e32bb90ce39c508a6f40fd72e792684f130d0f3b896ea191368f1e3",
+        "note": "One digest serves both algorithms: no member of the witness is null, an empty array, or an empty object, so jcs-n normalization is the identity here and the jcs-s digest is the same value (2aa3f5086e32bb90ce39c508a6f40fd72e792684f130d0f3b896ea191368f1e3)."
+      },
+      "must_fail": [
+        {
+          "diagnosis": "code-point key sort under jcs-n",
+          "policy": "sort on Unicode code points (non-conforming)",
+          "algorithm": "jcs-n",
+          "jcs_bytes": "{\"\ufb33\":2,\"\ud83d\ude00\":1}",
+          "jcs_bytes_hex": "7b22efacb3223a322c22f09f9880223a317d",
+          "sha256": "96c4e1b26f2ef1f5f03e115d3128f9306830bf5eaf2d523c0f7551d3424e4937"
+        },
+        {
+          "diagnosis": "code-point key sort under jcs-s",
+          "policy": "sort on Unicode code points (non-conforming)",
+          "algorithm": "jcs-s",
+          "jcs_bytes": "{\"\ufb33\":2,\"\ud83d\ude00\":1}",
+          "jcs_bytes_hex": "7b22efacb3223a322c22f09f9880223a317d",
+          "sha256": "96c4e1b26f2ef1f5f03e115d3128f9306830bf5eaf2d523c0f7551d3424e4937",
+          "note": "Identical to the jcs-n wrong branch on this witness, for the same reason the must_pass digest is algorithm-independent: normalization is the identity. Named separately so that neither digest is left unscoped."
+        }
+      ]
+    },
+    {
+      "case_id": "rfc8785-sorting-example",
+      "note": "The seven-member sorting example of RFC 8785 \u00a73.2.3, verbatim. Under the conforming order the emoji sorts between U+20AC and U+FB33; under a code-point sort it moves to the end. Included because it is the RFC's own witness, so a reader need not take our pair on trust.",
+      "witness_value": {
+        "\u20ac": "Euro Sign",
+        "\r": "Carriage Return",
+        "\ufb33": "Hebrew Letter Dalet With Dagesh",
+        "1": "One",
+        "\ud83d\ude00": "Emoji: Grinning Face",
+        "\u0080": "Control",
+        "\u00f6": "Latin Small Letter O With Diaeresis"
+      },
+      "must_pass": {
+        "policy": "sort on UTF-16 code units (conforming)",
+        "algorithms": [
+          "jcs-n",
+          "jcs-s"
+        ],
+        "jcs_bytes": "{\"\\r\":\"Carriage Return\",\"1\":\"One\",\"\u0080\":\"Control\",\"\u00f6\":\"Latin Small Letter O With Diaeresis\",\"\u20ac\":\"Euro Sign\",\"\ud83d\ude00\":\"Emoji: Grinning Face\",\"\ufb33\":\"Hebrew Letter Dalet With Dagesh\"}",
+        "jcs_bytes_hex": "7b225c72223a2243617272696167652052657475726e222c2231223a224f6e65222c22c280223a22436f6e74726f6c222c22c3b6223a224c6174696e20536d616c6c204c6574746572204f205769746820446961657265736973222c22e282ac223a224575726f205369676e222c22f09f9880223a22456d6f6a693a204772696e6e696e672046616365222c22efacb3223a22486562726577204c65747465722044616c6574205769746820446167657368227d",
+        "sha256": "5e321556d22018a9656991a9e94f77ec175fa193e52a2429d312f8419ec8b08c"
+      },
+      "must_fail": [
+        {
+          "diagnosis": "code-point key sort under jcs-n",
+          "policy": "sort on Unicode code points (non-conforming)",
+          "algorithm": "jcs-n",
+          "jcs_bytes": "{\"\\r\":\"Carriage Return\",\"1\":\"One\",\"\u0080\":\"Control\",\"\u00f6\":\"Latin Small Letter O With Diaeresis\",\"\u20ac\":\"Euro Sign\",\"\ufb33\":\"Hebrew Letter Dalet With Dagesh\",\"\ud83d\ude00\":\"Emoji: Grinning Face\"}",
+          "jcs_bytes_hex": "7b225c72223a2243617272696167652052657475726e222c2231223a224f6e65222c22c280223a22436f6e74726f6c222c22c3b6223a224c6174696e20536d616c6c204c6574746572204f205769746820446961657265736973222c22e282ac223a224575726f205369676e222c22efacb3223a22486562726577204c65747465722044616c6574205769746820446167657368222c22f09f9880223a22456d6f6a693a204772696e6e696e672046616365227d",
+          "sha256": "b69a6569f17e935ad787fd9b1ef01b5f66d84c6cb220c1ed9466b46512cd7fd2"
+        }
+      ]
+    }
+  ],
+  "digests_computed_by": "Recomputed 2026-08-03 by two implementations that agreed on every byte string and every digest: (1) a standard-library-only Python RFC 8785 serializer written for this run, whose UTF-16 sort key is built by explicit surrogate-pair decomposition rather than by str.encode('utf-16-be'); (2) the CPB reference implementation cpb.canonicalize at 7c9f6421 -- for the conforming branch as published, and for the code-point branch with the day-1 M08 patch applied, which is the only way the reference emits that order. Harness: day2/day2_vectors.py."
+}
