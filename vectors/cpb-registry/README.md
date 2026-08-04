@@ -24,13 +24,19 @@ the semantics travel with the vectors either way. Frozen instance values match
 ## Day-2 spec-mutation vectors (2026-08-03)
 
 Three vectors from the spec-mutation pass over draft-mih-sokolov-scitt-payload-binding-00
-(surviving mutants M08, M10, M11), byte-identical to the vault artifacts recorded in
-DAY2-REPORT.md and to the corpus-format versions contributed upstream in
-action-state-group/scitt-payload-binding PR #6:
+(surviving mutants M08, M10, M11), byte-identical to the vault artifacts and carrying the
+same pins as the corpus-format versions contributed upstream in
+action-state-group/scitt-payload-binding PR #6 (that corpus uses the registry's own vector
+schema, so those files are equivalent, not byte-identical):
 
 - `kat-utf16-key-order.json` — RFC 8785 §3.2.3 sorts member names on UTF-16 code
   units, not code points; observable only above U+FFFF. Two cases: a minimal
-  non-BMP pair and the RFC's own seven-member sorting example.
+  non-BMP pair and the RFC's own seven-member sorting example. Corrected 2026-08-04
+  (version 2): the `source` field claimed the sort key was outside the formalized
+  fragment, which stopped being true when the accompanying Lean development redefined
+  its key order over UTF-16 code units and proved that key injective. The new
+  `formalization_status` field states what is machine-checked and what is not. No
+  witness, byte string or digest changed.
 - `kat-identifier-trailing-newline.json` / `kat-identifier-surrounding-whitespace.json`
   — §4.1 identifier grammar MUST-FAILs (a 64-char lowercase hex string admits no
   trailing newline and no surrounding whitespace; reject, never trim). Split per
