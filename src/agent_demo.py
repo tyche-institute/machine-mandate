@@ -213,7 +213,7 @@ def main():
     holder_key = aaa_crypto.gen_ec()
     # NOTE 2026-08-11: session_nonce used to be quote_bound_nonce(quote_file), i.e. derived
     # from the very quote it freshness-checks. The relying party chooses the challenge and the
-    # Attester answers it; see mock_verifier.rebind_evidence.
+    # synthetic fixture builder models the Attester response; see mock_verifier.rebind_evidence.
     session_nonce = os.urandom(32)
     with tempfile.TemporaryDirectory(prefix="mm-evidence-") as tmpdir:
         quote_file, ear_file = rebind_evidence(os.path.join(FIX, "token-A_good_fresh.bin"),

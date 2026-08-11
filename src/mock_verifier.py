@@ -43,12 +43,13 @@ def quote_bound_nonce(path):
     return raw[off + 2:off + 2 + ed]
 
 def rebind_evidence(quote_path, ear_path, challenge, out_dir):
-    """Simulate the Attester answering a *verifier-chosen* challenge.
+    """Build a synthetic fixture for a *verifier-chosen* challenge.
 
     The fixtures are static captures, so we cannot ask a real TPM to quote a new
-    nonce. We instead splice `challenge` into the quote's extraData field and into
-    the EAR's eat_nonce, which is exactly what a fresh attestation round would
-    produce. Returns (quote_path, ear_path) inside out_dir.
+    nonce. We splice `challenge` into the quote's extraData field and into the
+    EAR's eat_nonce solely to exercise the verifier's gate logic. This does not
+    produce a matching TPM signature or a newly appraised EAR and must not be
+    treated as generated attestation evidence. Returns paths inside out_dir.
 
     This exists so the freshness gate receives a challenge the verifier chose,
     never one derived from the evidence it is checking.

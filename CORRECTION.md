@@ -41,10 +41,11 @@ ARTIFACT.md or Table §8.6 pointed at.
 
 - `MockVerifier.request()` now issues a **verifier-chosen 32-byte challenge** (`rp.challenge`),
   distinct from the OID4VP `nonce` that binds the KB-JWT.
-- `mock_verifier.rebind_evidence()` simulates the Attester answering that challenge. The
-  fixtures are static captures, so a real TPM cannot be asked for a new quote; the helper
-  splices the challenge into the quote's `extraData` and the EAR's `eat_nonce`, which is what a
-  fresh attestation round would produce.
+- `mock_verifier.rebind_evidence()` builds a synthetic Attester-response fixture for that challenge.
+  The captures are static, so the helper splices the challenge into the quote's `extraData` and the
+  EAR's `eat_nonce` to exercise the gate logic. It does **not** create a matching TPM signature or a
+  newly appraised EAR and is not new attestation evidence; a live flow must obtain those from the
+  Attester.
 - A replay is now what the name says: evidence that is **good, affirming and correctly
   EAR-bound**, produced for an *earlier* challenge. Freshness is the only term that can deny it.
 - `src/agent_demo.py` no longer derives its session nonce from the quote.

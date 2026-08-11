@@ -30,12 +30,14 @@ Expected output ends with `PASS  every gate is the sole denier of >=1 attack; th
 - `fixtures/` — pre-captured attestation quotes/EARs used by the L2 freshness check.
 - `run_ablation.py` — the self-checking reproduction of §8.6.
 
-**Honest scope (as in the paper).** The attestation root is an **emulated software TPM (swtpm)**: the
-RATS/Veraison freshness *logic* is real — the relying party issues the challenge, the Attester answers
-it, the nonce is re-derived from the raw quote bytes, and a quote bound to an earlier challenge is
-rejected — only the hardware root is emulated. (Corrected 2026-08-11: until that date the shipped
-reproduction path derived the "session" nonce from the quote it was checking, so a literal replay
-passed. See CORRECTION.md.) The verifier enforces the **declared** action,
+**Honest scope (as in the paper).** The captured attestation root is an **emulated software TPM
+(swtpm)**. The offline ablation exercises the corrected freshness decision: the relying party issues
+the challenge, the nonce is re-derived from quote bytes, and evidence bound to an earlier challenge is
+rejected. Because the captures are static, `rebind_evidence()` synthetically changes the fixture's
+`extraData` and EAR nonce; it does **not** create a matching TPM signature or a newly appraised EAR.
+Live use must obtain fresh signed evidence from the Attester. (Corrected 2026-08-11: until that date the
+shipped reproduction path derived the "session" nonce from the quote it was checking, so a literal
+replay passed. See CORRECTION.md.) The verifier enforces the **declared** action,
 sealed by the action-hash — not an oracle on the real-world effect (Assumption A1, paper §5). No real
 money moves. The wallet used in the phone demonstration is a commit-pinned rebuild of the EU reference
 wallet, not an official release.

@@ -34,8 +34,8 @@ _EAR_REPLAY = os.path.join(FIX, "ear-B_outcome_swapped.json")
 # NOTE 2026-08-11: the previous line here derived the "session" nonce from the very
 # quote it was meant to freshness-check (_SESSION_NONCE = quote_bound_nonce(_QUOTE_GOOD)),
 # which made the comparison a tautology and let a literal replay through. The relying
-# party now issues the challenge (MockVerifier.request -> rp.challenge) and the Attester
-# answers it; a stale quote is one bound to an earlier challenge.
+# party now issues the challenge (MockVerifier.request -> rp.challenge) and the synthetic
+# fixture builder models the Attester response; a stale quote is bound to an earlier challenge.
 _STALE_CHALLENGE = bytes(range(32))   # a challenge from an earlier, already-finished session
 
 
@@ -50,9 +50,9 @@ def evaluate(scope, executed_action, mandated_action=None, replay=False, contrai
     try:
         rp = MockVerifier(tl); rp.aud = AUD; rp.request()
         vp = ad.issue_action_mandate(_ISK, _HOLDER, scope, mandated, "affirming", rp.nonce, rp.aud)
-        # The Attester answers the challenge the relying party just chose. A replay is the
-        # same good, affirming, EAR-bound evidence produced for an EARLIER challenge, so
-        # freshness is the only term that can deny it.
+        # The fixture builder models an Attester answering the challenge the relying party just
+        # chose. A replay is the same good, affirming, EAR-bound evidence produced for an EARLIER
+        # challenge, so freshness is the only term that can deny it.
         answered = _STALE_CHALLENGE if replay else rp.challenge
         with tempfile.TemporaryDirectory() as td:
             if contraindicated:
