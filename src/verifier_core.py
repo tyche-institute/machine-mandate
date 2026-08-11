@@ -17,8 +17,8 @@ import tempfile
 
 import crypto as aaa_crypto
 import agent_demo as ad
-from mock_verifier import (AGENT_ENDORSER, MockVerifier, make_tl, quote_bound_nonce,
-                           rebind_evidence, self_signed, x5t)
+from mock_verifier import (AGENT_ENDORSER, MockVerifier, make_tl, rebind_evidence,
+                           self_signed, x5t)
 
 FIX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fixtures")
 AUD = ad.AUD
@@ -60,14 +60,17 @@ def evaluate(scope, executed_action, mandated_action=None, replay=False, contrai
             else:
                 qf, ef = rebind_evidence(_QUOTE_GOOD, _EAR_GOOD, answered, td)
             base = rp.verify(vp, _IJWK, _ITHUMB, ef, qf, rp.challenge)
-            l4_ok = False
+            l4_ok = None
             if base["L1_crypto"] and base["L2_attested"] and base["L3_endorser_role"]:
                 l4_ok, _, _ = ad.verify_l4_scope(vp, _IJWK, rp.nonce, executed_action)
         gates = {
             "L1": bool(base["L1_crypto"]), "L2": bool(base["L2_attested"]),
-            "L3": bool(base["L3_endorser_role"]), "L4": bool(l4_ok),
+            "L3": bool(base["L3_endorser_role"]), "L4": l4_ok,
         }
-        return {"gates": gates, "verdict": "ACCEPT" if all(gates.values()) else "DENY"}
+        return {
+            "gates": gates,
+            "verdict": "ACCEPT" if all(value is True for value in gates.values()) else "DENY",
+        }
     finally:
         try:
             os.unlink(tl)
