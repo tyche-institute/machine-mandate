@@ -82,3 +82,23 @@ artifact. The composition Internet-Draft's §5.4 claim is a different and correc
 under a fresh challenge rejected (rc≠0)" — in a different codebase, and stands unchanged.
 
 The emulated-root caveat is unchanged and unrelated: the Attester was and remains a software TPM.
+
+## Addendum (2026-08-11, later the same day)
+
+Two refinements to the statements above, recorded after the correction was first published
+(Zenodo version 2.1, 10.5281/zenodo.21888986):
+
+- **"The pattern was local to this artifact" was scoped too narrowly.** The grep covered the
+  sibling repositories `eatf`, `eatf-verifier` and `aep-pcr16-vector` only. The same wiring also
+  existed in the GATEHOUSE demo backend (`agent.eatf.eu`) and in the verifier bench's agent-gate
+  demo; both were corrected the same day, and the live GATEHOUSE deployment now denies its replay
+  card on freshness (`L2: replay (session nonce != quote nonce)`) over the public tunnel. Some
+  bench drivers retain quote-derived session values in their ACCEPT-row fixtures; their replay
+  rows use independent nonces and are honest, and that cleanup is tracked in the bench.
+- **This repository now also implements the manuscript §3.1 seal normalisation** (`deps/jcs.py`
+  NFC-normalises string keys and values, refusing NFC-equivalent duplicate keys;
+  `tests/test_nfc_seal.py` covers canonical-equivalence, lookalike-payee and duplicate-key
+  vectors), and rewords the ablation's "sole denier / composition is minimal" claims to
+  first-denier-in-evaluation-order: L4 re-verifies the presentation's signatures, so removing L1
+  alone would not admit the forged-credential vector. The freshness term remains the executably
+  load-bearing claim demonstrated above.

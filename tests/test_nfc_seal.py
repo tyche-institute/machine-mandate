@@ -46,3 +46,15 @@ def test_lookalike_payee_stays_distinct():
 def test_verifier_denies_lookalike_payee_at_l4():
     g = core.evaluate(SCOPE, LOOKALIKE, LATIN)["gates"]
     assert g["L4"] is False
+
+
+def test_nfc_equivalent_duplicate_keys_are_refused():
+    import pytest
+    from jcs import jcs
+
+    composed_key = "caf\u00e9"
+    decomposed_key = "cafe\u0301"
+    doc = {composed_key: "claim-one", decomposed_key: "claim-two"}
+    assert len(doc) == 2
+    with pytest.raises(ValueError):
+        jcs(doc)

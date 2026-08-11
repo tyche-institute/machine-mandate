@@ -20,8 +20,15 @@ def _nfc(obj):
     if isinstance(obj, str):
         return unicodedata.normalize("NFC", obj)
     if isinstance(obj, dict):
-        return {(unicodedata.normalize("NFC", k) if isinstance(k, str) else k): _nfc(v)
-                for k, v in obj.items()}
+        out = {}
+        for k, v in obj.items():
+            nk = unicodedata.normalize("NFC", k) if isinstance(k, str) else k
+            if nk in out:
+                # two distinct keys that are NFC-equivalent would silently merge
+                # (last-writer-wins) and drop a claim before sealing - refuse instead
+                raise ValueError("NFC-equivalent duplicate key: %r" % (nk,))
+            out[nk] = _nfc(v)
+        return out
     if isinstance(obj, (list, tuple)):
         return [_nfc(v) for v in obj]
     return obj
