@@ -4,13 +4,31 @@ jcs(): a faithful subset of RFC 8785 (JSON Canonicalisation Scheme) — sorted k
 no whitespace, UTF-8. Sufficient for our values (strings, ints, bools, arrays,
 objects); full ES6 number formatting (RFC 8785 §3.2.2) is not exercised here and is
 a noted M2 item if floats enter the schema.
+
+String keys and values are NFC-normalised before serialisation: RFC 8785 leaves
+Unicode normalization to the caller, and the mandate profile requires NFC so that
+two canonically equivalent encodings of the same string cannot yield diverging
+seals (manuscript §3.1). Codepoint-distinct lookalikes stay distinct by design —
+a swapped-in lookalike payee fails the seal comparison.
 """
 import hashlib
 import json
+import unicodedata
+
+
+def _nfc(obj):
+    if isinstance(obj, str):
+        return unicodedata.normalize("NFC", obj)
+    if isinstance(obj, dict):
+        return {(unicodedata.normalize("NFC", k) if isinstance(k, str) else k): _nfc(v)
+                for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [_nfc(v) for v in obj]
+    return obj
 
 
 def jcs(obj) -> bytes:
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"),
+    return json.dumps(_nfc(obj), sort_keys=True, separators=(",", ":"),
                       ensure_ascii=False).encode("utf-8")
 
 
@@ -19,4 +37,5 @@ def H(obj) -> str:
 
 
 def Hs(s: str) -> str:
+    # deliberately NOT normalised: hashes byte-exact compact serialisations (sd_hash)
     return "sha256:" + hashlib.sha256(s.encode("utf-8")).hexdigest()

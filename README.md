@@ -20,10 +20,13 @@ python run_ablation.py
 
 This reproduces the paper's **gate-ablation table (§8.6)** and self-checks every verdict: each of the
 four gates (L1 credential crypto, L2 attestation freshness, L3 issuer-on-trusted-list, L4 mandate
-scope + action-hash) is the sole denier of at least one attack; removing any gate admits that attack.
+scope + action-hash) is the first denier of at least one attack in evaluation order. For the freshness
+term the claim is executable: disabling only the freshness comparison admits the replay row and fails
+the run (`CORRECTION.md` shows both sides). L4 independently re-verifies the presentation's signatures,
+so the layering is defence-in-depth, not strict per-gate minimality.
 It is fully offline — no network, no LLM, no Docker.
 
-Expected output ends with `PASS  every gate is the sole denier of >=1 attack; the composition is minimal.`
+Expected output ends with `PASS  every gate is the first denier of >=1 attack; the freshness term is executably load-bearing (CORRECTION.md).`
 
 ## What is (and is not) here
 

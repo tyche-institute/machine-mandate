@@ -35,7 +35,7 @@ refusal, because the ACT is outside the granted authority.
 Reuses mock_verifier's L1/L2/L3 verbatim (imported, not reimplemented) and adds L4.
 """
 from __future__ import annotations
-import base64, json, os, sys
+import base64, json, os, shutil, sys, tempfile
 
 from cryptography.hazmat.primitives.asymmetric import ec
 
@@ -52,7 +52,7 @@ from jcs import H                      # noqa: E402
 import mock_verifier as mv             # noqa: E402
 from mock_verifier import (            # noqa: E402
     MockVerifier, self_signed, x5t, make_tl, ear_of, quote_bound_nonce,
-    AGENT_ENDORSER, CA_QC, AEP,
+    rebind_evidence, AGENT_ENDORSER, CA_QC, AEP,
 )
 
 
@@ -162,8 +162,13 @@ def main():
     holder_key = ec.generate_private_key(ec.SECP256R1())
 
     A_ear = os.path.join(FIX, "ear-A_good_fresh.json"); A_q = os.path.join(FIX, "token-A_good_fresh.bin")
-    B_ear = os.path.join(FIX, "ear-B_outcome_swapped.json"); B_q = os.path.join(FIX, "token-B_outcome_swapped.bin")
-    nonce_A = quote_bound_nonce(A_q); nonce_B = quote_bound_nonce(B_q); OTHER = bytes(range(32))
+    # verifier-chosen challenge with evidence rebound to it; the replay row rebinds
+    # to a stale challenge — never derived from the quote under test (CORRECTION.md)
+    td = tempfile.mkdtemp()
+    CH = os.urandom(32); STALE = bytes(range(32))
+    q_f, e_f = rebind_evidence(A_q, A_ear, CH, td)
+    sd = os.path.join(td, "stale"); os.makedirs(sd, exist_ok=True)
+    q_s, e_s = rebind_evidence(A_q, A_ear, STALE, sd)
 
     # The mandate's authority: a small allowed action set + a EUR 200,00 spend-limit.
     OUTCOME = AEP["measurements"]["outcome_sha256"]
@@ -187,32 +192,32 @@ def main():
         # label, TL(cert,type), ear, quote, session, ear_status,
         #        scope_obj, presented action_id, requested{action,amount}, expect
         ("in_scope",
-         (issuer_cert, AGENT_ENDORSER), A_ear, A_q, nonce_A, "affirming",
+         (issuer_cert, AGENT_ENDORSER), e_f, q_f, CH, "affirming",
          SCOPE, IN_SCOPE_ACTION,
          {"action_id": IN_SCOPE_ACTION, "outcome": OUTCOME, "amount": 15000}, "ACCEPT"),
 
         ("exceed_scope_action",   # L1+L2+L3 pass; ACT is outside the allowed set
-         (issuer_cert, AGENT_ENDORSER), A_ear, A_q, nonce_A, "affirming",
+         (issuer_cert, AGENT_ENDORSER), e_f, q_f, CH, "affirming",
          SCOPE, OVER_SCOPE_ACTION,
          {"action_id": OVER_SCOPE_ACTION, "outcome": OUTCOME, "amount": 100}, "DENY"),
 
         ("exceed_spend_limit",    # L1+L2+L3 pass; action allowed but amount over the cap
-         (issuer_cert, AGENT_ENDORSER), A_ear, A_q, nonce_A, "affirming",
+         (issuer_cert, AGENT_ENDORSER), e_f, q_f, CH, "affirming",
          SCOPE, IN_SCOPE_ACTION,
          {"action_id": IN_SCOPE_ACTION, "outcome": OUTCOME, "amount": 500000}, "DENY"),
 
         ("wrong_role",            # L3 fails independently — scope never rescues it
-         (issuer_cert, CA_QC), A_ear, A_q, nonce_A, "affirming",
+         (issuer_cert, CA_QC), e_f, q_f, CH, "affirming",
          SCOPE, IN_SCOPE_ACTION,
          {"action_id": IN_SCOPE_ACTION, "outcome": OUTCOME, "amount": 15000}, "DENY"),
 
         ("replay",                # L2 fails (replayed quote)
-         (issuer_cert, AGENT_ENDORSER), A_ear, A_q, OTHER, "affirming",
+         (issuer_cert, AGENT_ENDORSER), e_s, q_s, os.urandom(32), "affirming",
          SCOPE, IN_SCOPE_ACTION,
          {"action_id": IN_SCOPE_ACTION, "outcome": OUTCOME, "amount": 15000}, "DENY"),
 
         ("unlisted",              # L3 fails (issuer not on the endorser list)
-         (other_cert, AGENT_ENDORSER), A_ear, A_q, nonce_A, "affirming",
+         (other_cert, AGENT_ENDORSER), e_f, q_f, CH, "affirming",
          SCOPE, IN_SCOPE_ACTION,
          {"action_id": IN_SCOPE_ACTION, "outcome": OUTCOME, "amount": 15000}, "DENY"),
     ]
@@ -239,6 +244,7 @@ def main():
 
     art = os.path.join(HERE, "..", "artifacts"); os.makedirs(art, exist_ok=True)
     json.dump(out, open(os.path.join(art, "scope-enforce.json"), "w"), indent=2)
+    shutil.rmtree(td, ignore_errors=True)
 
     ok = all(r["match"] for r in out)
     # Sharpest evidence for the paper: the confused-deputy case where L1+L2+L3 all PASS

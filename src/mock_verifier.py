@@ -12,7 +12,7 @@ attestation evidence (EAR + raw TPM quote), and a trusted list, it ACCEPTs only 
 No standalone trust-validator standing in: this verifier IS the resolver.
 """
 from __future__ import annotations
-import base64, datetime as dt, hashlib, json, os, sys, tempfile
+import base64, datetime as dt, hashlib, json, os, shutil, sys, tempfile
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
@@ -169,16 +169,26 @@ def main():
     other_key, other_cert = self_signed("Some Unrelated QTSP")
     A_ear = os.path.join(FIX, "ear-A_good_fresh.json"); A_q = os.path.join(FIX, "token-A_good_fresh.bin")
     B_ear = os.path.join(FIX, "ear-B_outcome_swapped.json"); B_q = os.path.join(FIX, "token-B_outcome_swapped.bin")
-    nonce_A = quote_bound_nonce(A_q); nonce_B = quote_bound_nonce(B_q); OTHER = bytes(range(32))
+    # every session challenge is verifier-chosen and evidence is rebound to it (the
+    # replay row rebinds to a stale challenge from an "earlier" session) — never
+    # derived from the quote under test (CORRECTION.md)
+    td = tempfile.mkdtemp()
+    def sub(name):
+        p = os.path.join(td, name); os.makedirs(p, exist_ok=True); return p
+    STALE = bytes(range(32))
+    CH_A = os.urandom(32); CH_B = os.urandom(32)
+    q_fresh, e_fresh = rebind_evidence(A_q, A_ear, CH_A, sub("fresh"))
+    q_stale, e_stale = rebind_evidence(A_q, A_ear, STALE, sub("stale"))
+    q_contra, e_contra = rebind_evidence(B_q, B_ear, CH_B, sub("contra"))
 
     print("=== Mock OpenID4VP verifier — native AgentRuntimeEndorser resolution ===")
     cases = [
-        # label,          TL(cert,type),                    ear,    quote, session, ear_status, expect
-        ("good_fresh",    (issuer_cert, AGENT_ENDORSER),    A_ear,  A_q,   nonce_A, "affirming",       "ACCEPT"),
-        ("wrong_role",    (issuer_cert, CA_QC),             A_ear,  A_q,   nonce_A, "affirming",       "DENY"),
-        ("replay",        (issuer_cert, AGENT_ENDORSER),    A_ear,  A_q,   OTHER,   "affirming",       "DENY"),
-        ("contraindicated", (issuer_cert, AGENT_ENDORSER),  B_ear,  B_q,   nonce_B, "contraindicated", "DENY"),
-        ("unlisted",      (other_cert, AGENT_ENDORSER),     A_ear,  A_q,   nonce_A, "affirming",       "DENY"),
+        # label,          TL(cert,type),                    ear,      quote,    session,        ear_status, expect
+        ("good_fresh",    (issuer_cert, AGENT_ENDORSER),    e_fresh,  q_fresh,  CH_A,           "affirming",       "ACCEPT"),
+        ("wrong_role",    (issuer_cert, CA_QC),             e_fresh,  q_fresh,  CH_A,           "affirming",       "DENY"),
+        ("replay",        (issuer_cert, AGENT_ENDORSER),    e_stale,  q_stale,  os.urandom(32), "affirming",       "DENY"),
+        ("contraindicated", (issuer_cert, AGENT_ENDORSER),  e_contra, q_contra, CH_B,           "contraindicated", "DENY"),
+        ("unlisted",      (other_cert, AGENT_ENDORSER),     e_fresh,  q_fresh,  CH_A,           "affirming",       "DENY"),
     ]
     out = []
     for label, (cert, stype), ear, q, sess, ear_status, expect in cases:
@@ -194,6 +204,7 @@ def main():
         if res["reasons"]: print("    reasons:", "; ".join(res["reasons"]))
     art = os.path.join(HERE, "..", "artifacts"); os.makedirs(art, exist_ok=True)
     json.dump(out, open(os.path.join(art, "mock-verifier.json"), "w"), indent=2)
+    shutil.rmtree(td, ignore_errors=True)
     ok = all(r["match"] for r in out)
     print("\nMOCK VERIFIER:", "PASS — a verifier that resolves the endorser role natively over OID4VP "
           "(L1+L2+L3), accepting only genuine/fresh/affirming/endorser-listed presentations" if ok else "CHECK")

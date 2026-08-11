@@ -2,7 +2,9 @@
 """Reproduce the four-gate ablation (Table §8.6 of the paper).
 
 Hermetic: pure Python + `cryptography` + `PyJWT`. No network, no LLM, no Docker.
-Each attack is denied by exactly one gate; removing that gate admits the attack.
+Each attack is denied at exactly one gate — the first denier in evaluation order.
+For the freshness term the load-bearing claim is executable: disabling only the
+freshness comparison admits the replay row and fails this run (see CORRECTION.md).
 
     pip install -r requirements.txt
     python run_ablation.py            # prints the table and self-checks every verdict
@@ -83,7 +85,8 @@ def main():
               f"{mark(g.get('L4')):>4}  {verdict:9}{str(denier or '-'):>7}{tail}")
     print("-" * 78)
     if fails == 0:
-        print("PASS  every gate is the sole denier of >=1 attack; the composition is minimal.")
+        print("PASS  every gate is the first denier of >=1 attack; "
+              "the freshness term is executably load-bearing (CORRECTION.md).")
     else:
         print(f"FAIL  {fails} verdict(s) did not match the paper.")
     return fails
