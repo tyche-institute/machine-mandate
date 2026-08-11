@@ -17,7 +17,26 @@ CONFUSED_TOOL = "wire-transfer/vendor-x"
 LIMIT_EUR = 500
 AUD = "https://agent-demo.verifier.example"
 def action_hash(action):
-    return H({"tool": str(action["tool"]), "amount_eur": int(action["amount_eur"]), "to": str(action["to"])})
+    # The seal must REJECT what it cannot represent, never coerce it. int() used to
+    # truncate silently, so an executed EUR 250.99 sealed identically to an approved
+    # EUR 250 and passed all four gates: the fractional part was simply unsealed.
+    # The profile declares integer euros (manuscript 3.1); enforce that here.
+    return H({"tool": _exact_str(action["tool"]),
+              "amount_eur": _exact_int(action["amount_eur"]),
+              "to": _exact_str(action["to"])})
+
+
+def _exact_int(v):
+    if isinstance(v, bool) or not isinstance(v, int):
+        raise ValueError("amount_eur must be an integer number of euros, got %r (%s)"
+                         % (v, type(v).__name__))
+    return v
+
+
+def _exact_str(v):
+    if not isinstance(v, str):
+        raise ValueError("action fields must be strings, got %r (%s)" % (v, type(v).__name__))
+    return v
 def hermes_base_candidates():
     configured = os.environ.get("HERMES_URL", "http://127.0.0.1:11435/v1").rstrip("/")
     candidates = [configured]
@@ -139,9 +158,13 @@ def verify_l4_scope(vp_token, issuer_jwk, nonce, action):
     scope = claims.get("scope") or {}
     allowed = set(scope.get("allowed_actions") or [])
     max_spend = int(scope.get("max_spend", 0))
-    hash_matches = claims.get("action_hash") == action_hash(action)
+    try:
+        hash_matches = claims.get("action_hash") == action_hash(action)
+    except (ValueError, KeyError, TypeError) as e:
+        # An action the seal cannot represent is denied, not coerced and not crashed.
+        return False, {"action_hash_bound": False, "malformed_action": str(e)}, "L4 malformed action"
     action_allowed = action["tool"] in allowed
-    amount_ok = int(action["amount_eur"]) <= max_spend
+    amount_ok = action["amount_eur"] <= max_spend
     detail = {"action_allowed": action_allowed, "amount_within_limit": amount_ok, "action_hash_bound": hash_matches, "allowed_actions": sorted(allowed), "max_spend_eur": max_spend}
     if not hash_matches:
         return False, detail, "L4 action hash mismatch"
