@@ -35,11 +35,42 @@ AEP = json.load(open(os.path.join(FIX, "demo.aep.json")))
 
 
 def b64u_dec(s): return base64.urlsafe_b64decode((s or "") + "=" * (-len(s or "") % 4))
+def b64u_enc(b): return base64.urlsafe_b64encode(b).decode().rstrip("=")
 
 def quote_bound_nonce(path):
     d = open(path, "rb").read(); size = int.from_bytes(d[16:18], "big"); raw = d[18:18 + size]
     qs = int.from_bytes(raw[6:8], "big"); off = 8 + qs; ed = int.from_bytes(raw[off:off + 2], "big")
     return raw[off + 2:off + 2 + ed]
+
+def rebind_evidence(quote_path, ear_path, challenge, out_dir):
+    """Simulate the Attester answering a *verifier-chosen* challenge.
+
+    The fixtures are static captures, so we cannot ask a real TPM to quote a new
+    nonce. We instead splice `challenge` into the quote's extraData field and into
+    the EAR's eat_nonce, which is exactly what a fresh attestation round would
+    produce. Returns (quote_path, ear_path) inside out_dir.
+
+    This exists so the freshness gate receives a challenge the verifier chose,
+    never one derived from the evidence it is checking.
+    """
+    d = bytearray(open(quote_path, "rb").read())
+    size = int.from_bytes(d[16:18], "big")
+    raw_off = 18
+    qs = int.from_bytes(d[raw_off + 6:raw_off + 8], "big")
+    off = raw_off + 8 + qs
+    ed = int.from_bytes(d[off:off + 2], "big")
+    if len(challenge) != ed:
+        raise ValueError("challenge must be %d bytes for this quote" % ed)
+    d[off + 2:off + 2 + ed] = challenge
+    q_out = os.path.join(out_dir, os.path.basename(quote_path))
+    open(q_out, "wb").write(bytes(d))
+
+    e = json.load(open(ear_path))
+    e["eat_nonce"] = b64u_enc(challenge)
+    e_out = os.path.join(out_dir, os.path.basename(ear_path))
+    json.dump(e, open(e_out, "w"), indent=2)
+    return q_out, e_out
+
 
 def ear_of(path):
     d = json.load(open(path))
@@ -80,9 +111,11 @@ class MockVerifier:
         self.tl = TrustedListXML.from_file(trusted_list_path, granted_only=False)
         self.aud = "https://mock-verifier.example"
         self.nonce = None
+        self.challenge = None
 
     def request(self):
         self.nonce = "rp-" + hashlib.sha256(os.urandom(8)).hexdigest()[:12]
+        self.challenge = os.urandom(32)   # verifier-chosen freshness nonce (RFC 9334 Appendix A)
         return {"response_type": "vp_token", "client_id": self.aud, "nonce": self.nonce,
                 "dcql_query": {"credentials": [{"id": "c1", "format": "dc+sd-jwt",
                     "meta": {"vct_values": ["https://vocab.tyche.institute/vct/machine-mandate"]},

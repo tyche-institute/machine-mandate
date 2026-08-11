@@ -10,7 +10,7 @@ sys.path.insert(0, DEPS)
 import crypto as aaa_crypto
 import mandate
 from jcs import H
-from mock_verifier import AEP, AGENT_ENDORSER, MockVerifier, make_tl, quote_bound_nonce, self_signed, x5t
+from mock_verifier import rebind_evidence, AEP, AGENT_ENDORSER, MockVerifier, make_tl, quote_bound_nonce, self_signed, x5t
 from scope_enforce import scope_for
 ALLOWED_TOOL = "pay-invoice/acme-corp"
 CONFUSED_TOOL = "wire-transfer/vendor-x"
@@ -211,9 +211,14 @@ def main():
     issuer_jwk = aaa_crypto.pub_jwk(issuer_key)
     issuer_thumb = x5t(issuer_cert)
     holder_key = aaa_crypto.gen_ec()
-    quote_file = os.path.join(FIX, "token-A_good_fresh.bin")
-    ear_file = os.path.join(FIX, "ear-A_good_fresh.json")
-    session_nonce = quote_bound_nonce(quote_file)
+    # NOTE 2026-08-11: session_nonce used to be quote_bound_nonce(quote_file), i.e. derived
+    # from the very quote it freshness-checks. The relying party chooses the challenge and the
+    # Attester answers it; see mock_verifier.rebind_evidence.
+    session_nonce = os.urandom(32)
+    _tmpdir = tempfile.mkdtemp(prefix="mm-evidence-")
+    quote_file, ear_file = rebind_evidence(os.path.join(FIX, "token-A_good_fresh.bin"),
+                                           os.path.join(FIX, "ear-A_good_fresh.json"),
+                                           session_nonce, _tmpdir)
     print("=== Autonomous agent over MachineMandate verifier rail ===")
     print("Hermes candidates: " + ", ".join(hermes_base_candidates()))
     print("Mandate scope: allowed=%s max_spend=EUR %s" % (", ".join(scope["allowed_actions"]), scope["max_spend"]))

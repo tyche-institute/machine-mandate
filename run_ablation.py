@@ -7,22 +7,22 @@ Each attack is denied by exactly one gate; removing that gate admits the attack.
     pip install -r requirements.txt
     python run_ablation.py            # prints the table and self-checks every verdict
 """
-import os, sys
+import os, sys, tempfile
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 sys.path.insert(0, os.path.join(ROOT, "deps"))
 
 import verifier_core as m               # four-gate verifier (offline)
 import agent_demo as ad
-from mock_verifier import self_signed, make_tl, MockVerifier
+from mock_verifier import self_signed, make_tl, MockVerifier, rebind_evidence
 
 SCOPE = {"allowed_actions": ["pay-invoice/sepa-demo"], "max_spend": 500, "currency": "EUR"}
 A = lambda tool, amt, to: {"tool": tool, "amount_eur": amt, "to": to}
 GOOD = A("pay-invoice/sepa-demo", 120, "acme")
 
 
-def gates(ex, man=None, replay=False):
-    return m.evaluate(SCOPE, ex, man, replay=replay)["gates"]
+def gates(ex, man=None, replay=False, contraindicated=False):
+    return m.evaluate(SCOPE, ex, man, replay=replay, contraindicated=contraindicated)["gates"]
 
 
 def forged_credential():
@@ -32,7 +32,9 @@ def forged_credential():
     parts = vp.split("~"); jwt = parts[0].split("."); sig = jwt[2]
     jwt[2] = sig[:-4] + ("AAAA" if sig[-4:] != "AAAA" else "BBBB"); parts[0] = ".".join(jwt)
     try:
-        b = rp.verify("~".join(parts), m._IJWK, m._ITHUMB, m._EAR_GOOD, m._QUOTE_GOOD, m._SESSION_NONCE)
+        with tempfile.TemporaryDirectory() as td:
+            qf, ef = rebind_evidence(m._QUOTE_GOOD, m._EAR_GOOD, rp.challenge, td)
+            b = rp.verify("~".join(parts), m._IJWK, m._ITHUMB, ef, qf, rp.challenge)
         return {"L1": bool(b["L1_crypto"]), "L2": None, "L3": None, "L4": None}
     except Exception:
         return {"L1": False, "L2": None, "L3": None, "L4": None}
@@ -43,7 +45,9 @@ def untrusted_issuer():
     r = self_signed("CN=Rogue Issuer"); cert = next(x for x in r if hasattr(x, "public_bytes"))
     tl = make_tl(cert, m.AGENT_ENDORSER); rp = MockVerifier(tl); rp.aud = m.AUD; rp.request()
     vp = ad.issue_action_mandate(m._ISK, m._HOLDER, SCOPE, GOOD, "affirming", rp.nonce, rp.aud)
-    b = rp.verify(vp, m._IJWK, m._ITHUMB, m._EAR_GOOD, m._QUOTE_GOOD, m._SESSION_NONCE)
+    with tempfile.TemporaryDirectory() as td:
+        qf, ef = rebind_evidence(m._QUOTE_GOOD, m._EAR_GOOD, rp.challenge, td)
+        b = rp.verify(vp, m._IJWK, m._ITHUMB, ef, qf, rp.challenge)
     return {"L1": bool(b["L1_crypto"]), "L2": bool(b["L2_attested"]), "L3": bool(b["L3_endorser_role"]), "L4": None}
 
 
@@ -51,6 +55,7 @@ CASES = [
     ("legitimate in-scope payment (EUR 120)", lambda: gates(GOOD),                                   "ACCEPT", None),
     ("forged / altered credential",           forged_credential,                                     "DENY",   "L1"),
     ("replayed stale attestation",            lambda: gates(GOOD, replay=True),                      "DENY",   "L2"),
+    ("attestation contraindicated",           lambda: gates(GOOD, contraindicated=True),             "DENY",   "L2"),
     ("issuer not on the trusted list",        untrusted_issuer,                                      "DENY",   "L3"),
     ("over-limit payment (EUR 4800)",         lambda: gates(A("pay-invoice/sepa-demo", 4800, "acme")), "DENY", "L4"),
     ("prompt-injected wire transfer",         lambda: gates(A("wire-transfer/vendor-x", 250, "vendor-x")), "DENY", "L4"),
