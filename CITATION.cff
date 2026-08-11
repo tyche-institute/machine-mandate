@@ -46,7 +46,7 @@ identifiers:
     value: "10.5281/zenodo.21229864"
     description: "Preprint (concept DOI, all versions)"
   - type: doi
-    value: "10.5281/zenodo.21888986"
+    value: "10.5281/zenodo.21889786"
     description: "Preprint v2.1, 11 August 2026 — the corrected version (see CORRECTION.md)"
   - type: doi
     value: "10.5281/zenodo.21229257"

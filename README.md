@@ -4,7 +4,7 @@
 EU Digital Identity Wallet.* Anton Sokolov, Tyche Institute. Preprint PDF in [`paper/`](paper/) —
 version 2.1 (11 August 2026), which carries the correction described in [`CORRECTION.md`](CORRECTION.md).
 **Preprint DOI, all versions:** [10.5281/zenodo.21229864](https://doi.org/10.5281/zenodo.21229864);
-**this version:** [10.5281/zenodo.21888986](https://doi.org/10.5281/zenodo.21888986) ·
+**this version:** [10.5281/zenodo.21889786](https://doi.org/10.5281/zenodo.21889786) ·
 **Real-phone evidence bundle:** [10.5281/zenodo.21229257](https://doi.org/10.5281/zenodo.21229257).
 
 A **MachineMandate** is an SD-JWT verifiable credential that binds a bounded grant of authority to *one
