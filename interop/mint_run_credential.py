@@ -105,6 +105,13 @@ def self_check(sd_full, holder_key, issuer_key, issuer_cert, issuer_jwk, f):
     ix5t = x5t(issuer_cert)
     ear = os.path.join(FIX, "ear-A_good_fresh.json")
     quote = os.path.join(FIX, "token-A_good_fresh.bin")
+    # FIXTURE NONCE, NOT A FRESHNESS TEST. This self-check drives the digest-invariance
+    # claim across two presentations; it deliberately feeds the mock verifier a session
+    # nonce read back out of the static quote, so its L2 is an identity check and proves
+    # nothing about replay. The freshness gate is exercised where it is claimed:
+    # run_ablation.py's replay row, tests/test_freshness.py, and the Deliverable-B
+    # runner's case 5 (a real tpm2_checkquote under a fresh transcript digest).
+    # See CORRECTION.md — do not read this line as the defect corrected there.
     session_nonce = quote_bound_nonce(quote)
     reveal = {"principal", "swname", "ear_status"}
 

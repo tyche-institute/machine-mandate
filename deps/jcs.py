@@ -1,15 +1,25 @@
 """Canonicalisation + hashing.
 
-jcs(): a faithful subset of RFC 8785 (JSON Canonicalisation Scheme) — sorted keys,
-no whitespace, UTF-8. Sufficient for our values (strings, ints, bools, arrays,
-objects); full ES6 number formatting (RFC 8785 §3.2.2) is not exercised here and is
-a noted M2 item if floats enter the schema.
+jcs(): a subset of RFC 8785 (JSON Canonicalisation Scheme) — sorted keys, no
+whitespace, UTF-8 — PLUS an NFC pre-pass, and it is not byte-compatible with
+RFC 8785 in either direction. Do not describe it as "RFC 8785 canonicalisation"
+without this paragraph:
 
-String keys and values are NFC-normalised before serialisation: RFC 8785 leaves
-Unicode normalization to the caller, and the mandate profile requires NFC so that
-two canonically equivalent encodings of the same string cannot yield diverging
-seals (manuscript §3.1). Codepoint-distinct lookalikes stay distinct by design —
-a swapped-in lookalike payee fails the seal comparison.
+  * NFC divergence. String keys and values are NFC-normalised before
+    serialisation. RFC 8785 leaves Unicode normalization to the caller and
+    serialises the input as given, so for a decomposed input this module and a
+    conformant RFC 8785 implementation emit DIFFERENT bytes and different
+    digests. The mandate profile wants NFC so that two canonically equivalent
+    encodings of one payee cannot yield diverging seals (manuscript §3.1);
+    that is a deliberate profile choice, not conformance.
+  * Number formatting. Full ES6 number formatting (RFC 8785 §3.2.2) is not
+    implemented. The profile carries integer euros only, and the seal now
+    REFUSES a non-integer amount rather than coercing it
+    (src/agent_demo.py action_hash), so the unimplemented cases are unreachable
+    from the verification path rather than silently wrong.
+
+Codepoint-distinct lookalikes stay distinct by design — a swapped-in lookalike
+payee fails the seal comparison, which is the safe direction.
 """
 import hashlib
 import json

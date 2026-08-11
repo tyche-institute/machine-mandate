@@ -102,3 +102,27 @@ Two refinements to the statements above, recorded after the correction was first
   first-denier-in-evaluation-order: L4 re-verifies the presentation's signatures, so removing L1
   alone would not admit the forged-credential vector. The freshness term remains the executably
   load-bearing claim demonstrated above.
+
+## Second addendum (2026-08-11, evening) — two further defects found by adversarial review
+
+The correction above was itself put through an adversarial review. It found two things
+in the *corrected* code, both now fixed in this repository:
+
+- **The action seal truncated instead of refusing.** `action_hash()` coerced its fields
+  with `int()`/`str()`, so an executed action of **EUR 250.99 produced the same seal as an
+  approved EUR 250** and passed all four gates — the fractional part was simply unsealed.
+  This is not the description-to-effect gap of Assumption A1; it is the seal failing to
+  bind a *declared* value it claimed to bind. The seal now refuses any non-integer amount
+  and any non-string field, and `verify_l4_scope` returns `L4 malformed action` (a denial)
+  rather than raising through `evaluate()`. Regression: `tests/test_seal_types.py`.
+- **`deps/jcs.py` described itself as "a faithful subset of RFC 8785".** With the NFC
+  pre-pass added earlier the same day, it is not: for a decomposed input this module and a
+  conformant RFC 8785 implementation emit different bytes and different digests. The
+  docstring now states the divergence explicitly and scopes the number-format gap.
+
+Two `interop/` drivers still read their session nonce back out of the static quote
+(`mint_run_credential.py`, `deliverable_b_runner.py`). Neither claims to test freshness —
+the first checks digest invariance, the second carries a real `tpm2_checkquote` replay
+case — but because that line looks exactly like the defect corrected above, each now
+carries an inline note saying so. The freshness gate is exercised in `run_ablation.py`,
+`tests/test_freshness.py`, and the Deliverable-B runner's case 5.
