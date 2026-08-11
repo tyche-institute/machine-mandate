@@ -9,7 +9,7 @@ type: software
 license: Apache-2.0
 repository-code: "https://github.com/tyche-institute/machine-mandate"
 url: "https://github.com/tyche-institute/machine-mandate"
-date-released: "2026-07-07"
+date-released: "2026-08-11"
 
 authors:
   - family-names: "Sokolov"
@@ -43,8 +43,11 @@ abstract: >
 
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.21229865"
+    value: "10.5281/zenodo.21229864"
     description: "Preprint (concept DOI, all versions)"
+  - type: doi
+    value: "10.5281/zenodo.21888986"
+    description: "Preprint v2.1, 11 August 2026 — the corrected version (see CORRECTION.md)"
   - type: doi
     value: "10.5281/zenodo.21229257"
     description: "Real-phone evidence bundle (concept DOI, all versions)"
@@ -58,5 +61,5 @@ preferred-citation:
       orcid: "https://orcid.org/0000-0003-2452-7096"
       affiliation: "Tyche Institute, Tallinn, Estonia"
   year: 2026
-  doi: "10.5281/zenodo.21229865"
-  url: "https://doi.org/10.5281/zenodo.21229865"
+  doi: "10.5281/zenodo.21229864"
+  url: "https://doi.org/10.5281/zenodo.21229864"
