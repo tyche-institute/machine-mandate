@@ -126,3 +126,23 @@ the first checks digest invariance, the second carries a real `tpm2_checkquote` 
 case — but because that line looks exactly like the defect corrected above, each now
 carries an inline note saying so. The freshness gate is exercised in `run_ablation.py`,
 `tests/test_freshness.py`, and the Deliverable-B runner's case 5.
+
+## Third addendum (2026-08-11, late) — the NFC pre-pass violates a normative MUST
+
+The NFC normalisation added earlier today was described here and in the manuscript as filling a
+gap that "RFC 8785 leaves to the caller". That is wrong, and the error is ours. RFC 8785 §3.1 is
+explicit:
+
+> "Although the Unicode standard offers the possibility of rearranging certain character
+> sequences, referred to as 'Unicode Normalization' [UCNORM], JCS-compliant string processing
+> does not take this into consideration. That is, all components involved in a scheme depending
+> on JCS **MUST preserve** Unicode string data 'as is'."
+
+So the profile's NFC pre-pass is a deliberate **deviation from a normative MUST**, not a caller
+choice, and `deps/jcs.py` is **not RFC 8785 conformant**. The behaviour is unchanged and was
+always accurately described; what was wrong was the justification. The docstring now states the
+deviation in those terms, and anything that must interoperate with a conformant JCS
+implementation must not use this function.
+
+The published manuscript v2.2 (10.5281/zenodo.21889786) §3.1 still carries the "leaves to the
+caller" wording. It is a mischaracterisation of the standard, not a misdescription of the code.

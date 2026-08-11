@@ -5,13 +5,17 @@ whitespace, UTF-8 — PLUS an NFC pre-pass, and it is not byte-compatible with
 RFC 8785 in either direction. Do not describe it as "RFC 8785 canonicalisation"
 without this paragraph:
 
-  * NFC divergence. String keys and values are NFC-normalised before
-    serialisation. RFC 8785 leaves Unicode normalization to the caller and
-    serialises the input as given, so for a decomposed input this module and a
-    conformant RFC 8785 implementation emit DIFFERENT bytes and different
-    digests. The mandate profile wants NFC so that two canonically equivalent
-    encodings of one payee cannot yield diverging seals (manuscript §3.1);
-    that is a deliberate profile choice, not conformance.
+  * NFC: a deliberate VIOLATION of a normative MUST, not a gap in the spec.
+    RFC 8785 §3.1 is explicit that normalization is not performed: "all
+    components involved in a scheme depending on JCS MUST preserve Unicode
+    string data 'as is'". This module normalises string keys and values to NFC
+    before serialising, so for a decomposed input it and a conformant RFC 8785
+    implementation emit DIFFERENT bytes and different digests, and this module
+    is NOT RFC 8785 conformant. The mandate profile takes that trade knowingly:
+    it prefers that two canonically equivalent encodings of one payee cannot
+    yield diverging seals (manuscript §3.1) over byte-level JCS conformance.
+    Anything that must interoperate with a conformant JCS implementation — the
+    composition draft's digest join, for one — must NOT use this function.
   * Number formatting. Full ES6 number formatting (RFC 8785 §3.2.2) is not
     implemented. The profile carries integer euros only, and the seal now
     REFUSES a non-integer amount rather than coercing it
