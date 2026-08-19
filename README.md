@@ -28,7 +28,7 @@ It is fully offline — no network, no LLM, no Docker.
 
 Expected output ends with `PASS  every gate is the first denier of >=1 attack; the freshness term is executably load-bearing (CORRECTION.md).`
 
-## What is (and is not) here
+## What is here
 
 - `src/` — the four-gate verifier, the mandate presentation/verification, and the action-hash seal.
 - `deps/` — pure-crypto helpers (JCS canonicalization, SD-JWT VC issue/verify, EC keys).
