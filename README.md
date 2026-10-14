@@ -2,10 +2,14 @@
 
 **Paper:** *Enforcement, not Alignment: an Action-Sealed Authority Gate for Autonomous AI Agents in the
 EU Digital Identity Wallet.* Anton Sokolov, Tyche Institute. Preprint PDF in [`paper/`](paper/) —
-version 2.1 (11 August 2026), which carries the correction described in [`CORRECTION.md`](CORRECTION.md).
+version 2.3 (13 August 2026), which carries the correction described in [`CORRECTION.md`](CORRECTION.md).
 **Preprint DOI, all versions:** [10.5281/zenodo.21229864](https://doi.org/10.5281/zenodo.21229864);
-**this version:** [10.5281/zenodo.21914667](https://doi.org/10.5281/zenodo.21914667) ·
-**Real-phone evidence bundle:** [10.5281/zenodo.21229257](https://doi.org/10.5281/zenodo.21229257).
+**this version (2.3):** [10.5281/zenodo.21914667](https://doi.org/10.5281/zenodo.21914667).
+
+**Real-phone evidence bundle:** Zenodo dataset *MachineMandate: Real-Phone Evidence Bundle — Bounded
+SD-JWT VC Delegation to an Autonomous LLM Agent in an EUDI Reference-Wallet Build, with Attested
+Four-Gate Enforcement*. DOI, all versions: [10.5281/zenodo.21229257](https://doi.org/10.5281/zenodo.21229257);
+latest version 1.2 (11 August 2026): [10.5281/zenodo.21889769](https://doi.org/10.5281/zenodo.21889769).
 
 A **MachineMandate** is an SD-JWT verifiable credential that binds a bounded grant of authority to *one
 exact action* via an action-hash tamper-seal, presented over OpenID4VP to a **four-gate verifier** that
